@@ -88,7 +88,7 @@ class ClockLayout(MDBoxLayout):
                         btn.disabled = True
                         btn.md_bg_color_disabled = btn.background_normal
             refresh_duration = time.time() - refresh_start
-            time.sleep(REFRESH_TIME - refresh_duration)
+            time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
 
     def start_clock(self):
         self.running = True
