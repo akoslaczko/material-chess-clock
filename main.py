@@ -1,3 +1,7 @@
+"""
+Material Design style chess clock app using KivyMD
+"""
+
 import threading
 from datetime import timedelta
 import re
