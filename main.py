@@ -3,6 +3,7 @@ Material Design style chess clock app using KivyMD
 """
 
 import threading
+import time
 from datetime import timedelta
 import re
 
@@ -93,7 +94,7 @@ class ClockLayout(MDBoxLayout):
         """
         Refresh buttons
         """
-        import time  # ???
+        # import time  # ???
         while self.running:
             refresh_start = time.time()
             for btn in (self.clock_button1, self.clock_button2):
