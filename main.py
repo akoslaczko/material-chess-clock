@@ -1,3 +1,7 @@
+import threading
+from datetime import timedelta
+import re
+
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
@@ -7,10 +11,6 @@ from kivymd.uix.behaviors import CommonElevationBehavior
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
-
-import threading
-from datetime import timedelta
-import re
 
 # Window for testing
 # Window.size = [330, 600]
@@ -22,6 +22,9 @@ DEFAULT_INCREMENT = 5  # in seconds
 
 
 class MainLayout(MDBoxLayout):
+    """
+    Main layout
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -36,6 +39,9 @@ class MainLayout(MDBoxLayout):
 
 
 class ClockToolbar(MDTopAppBar):
+    """
+    Toolbar
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Visual attributes
@@ -48,6 +54,9 @@ class ClockToolbar(MDTopAppBar):
 
 
 class ClockLayout(MDBoxLayout):
+    """
+    Clock layout
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -71,9 +80,15 @@ class ClockLayout(MDBoxLayout):
         self.clock_button2.bind(on_press=self.on_clock_button_press)
 
     def start_threading(self, dt):
+        """
+        Threading
+        """
         threading.Thread(target=self.refresh_buttons).start()
 
     def refresh_buttons(self):
+        """
+        Refresh buttons
+        """
         import time  # ???
         while self.running:
             refresh_start = time.time()
@@ -91,15 +106,24 @@ class ClockLayout(MDBoxLayout):
             time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
 
     def start_clock(self):
+        """
+        Start clock
+        """
         self.running = True
         self.start_threading(1)
         self.control_buttons_layout.update_control_buttons_disabled_state()
 
     def stop_clock(self):
+        """
+        Stop clock
+        """
         self.running = False
         self.control_buttons_layout.update_control_buttons_disabled_state()
 
     def reset_clock(self):
+        """
+        Reset clock
+        """
         self.stop_clock()  # Should be already stopped, but just in case
         self.flagged = False
         self.clock_button1.state = "down"
@@ -114,6 +138,9 @@ class ClockLayout(MDBoxLayout):
         self.clock_button2.update_text_from_time()
 
     def on_clock_button_press(self, button_obj, *args):
+        """
+        On press method for clock buttons
+        """
         self.press_count += 1
         self.button_click.play()
         if not self.flagged:
@@ -132,6 +159,9 @@ class ClockLayout(MDBoxLayout):
 
 
 class ClockButton(MDFlatButton, MDToggleButton, CommonElevationBehavior):
+    """
+    Clock button
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -155,6 +185,9 @@ class ClockButton(MDFlatButton, MDToggleButton, CommonElevationBehavior):
         self.update_text_from_time()
 
     def update_text_from_time(self):
+        """
+        Update the clock button's time-text
+        """
         # Split timedelta string
         t_list = re.split("[:.]", str(self.time))
         t_text = ""
@@ -179,6 +212,9 @@ class ClockButton(MDFlatButton, MDToggleButton, CommonElevationBehavior):
 
 
 class ControlButtonsLayout(MDFloatLayout):
+    """
+    Control buttons layout
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -204,12 +240,17 @@ class ControlButtonsLayout(MDFloatLayout):
         self.setup_button.bind(on_press=self.on_press_setup)
 
     def adjust_width(self):
-        """Dynamically adjust width based on max child widget size"""
+        """
+        Dynamically adjust width based on max child widget size
+        """
         child_widths = [child.width for child in self.children if hasattr(child, 'width')]
         max_child_width = max(child_widths) if len(child_widths) > 0 else 0
         self.width = max_child_width
 
     def on_press_playpause(self, button_obj, *args):
+        """
+        On press method for Play/Pause button
+        """
         if isinstance(button_obj, PlayPauseButton):
             if not self.parent.flagged:
                 self.button_click.play()
@@ -220,17 +261,26 @@ class ControlButtonsLayout(MDFloatLayout):
             print("pressed playpause button")
 
     def on_press_reset(self, button_obj, *args):
+        """
+        On press method for Reset button
+        """
         if isinstance(button_obj, ResetButton):
             self.button_click.play()
             self.parent.reset_clock()
             print("pressed reset button")
 
     def on_press_setup(self, button_obj, *args):
+        """
+        On press method for Setup button
+        """
         if isinstance(button_obj, SetupButton):
             self.button_click.play()
             print("pressed setup button")
 
     def update_control_buttons_disabled_state(self):
+        """
+        Update clock button's disabled state
+        """
         if self.parent.running:
             self.reset_button.disabled = True
             self.setup_button.disabled = True
@@ -240,6 +290,9 @@ class ControlButtonsLayout(MDFloatLayout):
 
 
 class PlayPauseButton(MDFloatingActionButton):
+    """
+    Play/Pause button
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -250,6 +303,9 @@ class PlayPauseButton(MDFloatingActionButton):
 
 
 class ResetButton(MDFloatingActionButton):
+    """
+    Reset button
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -260,6 +316,9 @@ class ResetButton(MDFloatingActionButton):
 
 
 class SetupButton(MDFloatingActionButton):
+    """
+    Setup button
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
@@ -270,11 +329,14 @@ class SetupButton(MDFloatingActionButton):
 
 
 class ClockApp(MDApp):
+    """
+    Main app
+    """
     def build(self):
         # Visual attributes
         self.theme_cls.material_style = "M3"
         self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Indigo"  # 'Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue', 'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime', 'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray', 'BlueGray'
+        self.theme_cls.primary_palette = "Indigo"
         self.theme_cls.primary_dark_hue = "800"
         # Functional attributes
         # Child widgets
