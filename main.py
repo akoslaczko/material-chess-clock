@@ -7,12 +7,13 @@ import time
 from datetime import timedelta
 import re
 
+from kivy.core.audio import SoundLoader
+# from kivy.core.window import Window
+
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.button import MDFabButton, MDExtendedFabButton, MDExtendedFabButtonText
-from kivy.core.audio import SoundLoader
-# from kivy.core.window import Window
 
 # Window for testing
 # Window.size = [330, 600]
