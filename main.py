@@ -39,7 +39,7 @@ from kivymd.uix.textfield import (
 
 # Window for testing
 # Window.size = [330, 600]
-Window.size = [800, 440]
+Window.size = [1200, 600]
 
 REFRESH_TIME = 0.1
 DEFAULT_CLOCK_TIME = 0.2  # in minutes
@@ -357,11 +357,11 @@ class SetupButton(MDExtendedFabButton):
             ),
             # -----------------------Headline text-------------------------
             MDDialogHeadlineText(
-                text="Setup new timecontrol",
+                text="Setup new time-control",
             ),
             # -----------------------Supporting text-----------------------
             MDDialogSupportingText(
-                text="CAUTION: accepting will reset current game!",
+                text="CAUTION: accepting will reset the clock!",
             ),
             # -----------------------Custom content------------------------
             MDDialogContentContainer(
