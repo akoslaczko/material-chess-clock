@@ -209,7 +209,8 @@ class ClockButton(MDExtendedFabButton):
                 t_text += "0"  # "00"
         # Updating attributes
         self.time_text.text = t_text
-        if self.disabled is not True: # If the button is not disabled we also change the text color under 10 sec
+        if self.disabled is not True:
+            # If the button is not disabled we also change the text color under 10 sec
             if self.time < timedelta(seconds=10):
                 self.time_text.color = self.theme_cls.errorColor
             elif self.time >= timedelta(seconds=10):
