@@ -13,7 +13,7 @@ from kivy.core.audio import SoundLoader
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.button import MDFabButton, MDExtendedFabButton, MDExtendedFabButtonText
+from kivymd.uix.button import MDExtendedFabButton, MDExtendedFabButtonText, MDExtendedFabButtonIcon
 
 # Window for testing
 # Window.size = [330, 600]
@@ -151,6 +151,8 @@ class ClockButton(MDExtendedFabButton):
         self.pos_hint = {"center_x": .5, "center_y": .5}
         self.halign = "center"
         self.valign = "center"
+        self.theme_elevation_level = "Custom"
+        self.elevation_level = 5
         # Functional attributes
         self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.increment = timedelta(seconds=DEFAULT_INCREMENT)
@@ -264,43 +266,55 @@ class ControlButtonsLayout(MDFloatLayout):
             self.setup_button.disabled = False
 
 
-class PlayPauseButton(MDFabButton):
+class PlayPauseButton(MDExtendedFabButton):
     """
     Play/Pause button
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.icon = "play-pause"
         self.pos_hint = {"center_x": .5, "center_y": .75}
+        self.theme_elevation_level = "Custom"
+        self.elevation_level = 3
         # Functional attributes
         self.disabled = False
+        # Child Widgets
+        self.icon = MDExtendedFabButtonIcon(icon="play-pause")
+        self.add_widget(self.icon)
 
 
-class ResetButton(MDFabButton):
+class ResetButton(MDExtendedFabButton):
     """
     Reset button
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.icon = "refresh"
         self.pos_hint = {"center_x": .5, "center_y": .5}
+        self.theme_elevation_level = "Custom"
+        self.elevation_level = 3
         # Functional attributes
         self.disabled = False
+        # Child Widgets
+        self.icon = MDExtendedFabButtonIcon(icon="refresh")
+        self.add_widget(self.icon)
 
 
-class SetupButton(MDFabButton):
+class SetupButton(MDExtendedFabButton):
     """
     Setup button
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.icon = "dots-horizontal"
         self.pos_hint = {"center_x": .5, "center_y": .25}
+        self.theme_elevation_level = "Custom"
+        self.elevation_level = 3
         # Functional attributes
         self.disabled = False
+        # Child Widgets
+        self.icon = MDExtendedFabButtonIcon(icon="cog")
+        self.add_widget(self.icon)
 
 
 class ClockApp(MDApp):
