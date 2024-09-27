@@ -9,7 +9,7 @@ import re
 
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
-# from kivy.core.window import Window
+from kivy.core.window import Window
 
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -38,7 +38,7 @@ from kivymd.uix.list import (
 
 # Window for testing
 # Window.size = [330, 600]
-# Window.size = [600, 330]
+Window.size = [600, 330]
 
 REFRESH_TIME = 0.1
 DEFAULT_CLOCK_TIME = 0.1  # in minutes
