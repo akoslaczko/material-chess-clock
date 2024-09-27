@@ -104,7 +104,6 @@ class ClockLayout(MDBoxLayout):
                 if btn.disabled is False:
                     btn.time -= timedelta(seconds=REFRESH_TIME)
                     btn.update_text_from_time()
-                    # print(btn.text)
                     if btn.time == timedelta(milliseconds=0):
                         self.stop_clock()
                         self.flagged = True
@@ -204,10 +203,11 @@ class ClockButton(MDExtendedFabButton):
                 t_text += "0"  # "00"
         # Updating attributes
         self.time_text.text = t_text
-        if self.time < timedelta(seconds=10):
-            self.time_text.color = self.theme_cls.errorColor
-        elif self.time >= timedelta(seconds=10):
-            self.time_text.color = self.theme_cls.primaryColor
+        if self.disabled is not True:
+            if self.time < timedelta(seconds=10):
+                self.time_text.color = self.theme_cls.errorColor
+            elif self.time >= timedelta(seconds=10):
+                self.time_text.color = self.theme_cls.primaryColor
 
     def on_press(self):
         self.time += self.increment
