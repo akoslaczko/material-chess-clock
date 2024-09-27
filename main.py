@@ -348,9 +348,7 @@ class SetupButton(MDExtendedFabButton):
         # Child Widgets
         self.icon = MDExtendedFabButtonIcon(icon="cog")
         self.add_widget(self.icon)
-
-    def on_press(self):
-        MDDialog(
+        self.dialog = MDDialog(
             # ----------------------------Icon-----------------------------
             MDDialogIcon(
                 icon="cog",
@@ -395,15 +393,34 @@ class SetupButton(MDExtendedFabButton):
                 MDButton(
                     MDButtonText(text="Cancel"),
                     style="text",
+                    on_press=self.on_press_dialog_cancel,
                 ),
                 MDButton(
                     MDButtonText(text="Accept"),
                     style="text",
+                    on_release=self.on_press_dialog_accept,
                 ),
                 spacing="8dp",
             ),
             # -------------------------------------------------------------
-        ).open()
+        )
+
+    def on_press(self):
+        self.dialog.open()
+
+    def on_press_dialog_accept(self, *args):
+        """
+        On press fuction for setup dialog accept button
+        """
+        print("Accepted setup")
+        self.dialog.dismiss()
+
+    def on_press_dialog_cancel(self, *args):
+        """
+        On press fuction for setup dialog cancel button
+        """
+        print("Cancelled setup")
+        self.dialog.dismiss()
 
 
 class ClockApp(MDApp):
