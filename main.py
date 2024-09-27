@@ -10,10 +10,7 @@ import re
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.button import MDButton, MDButtonText, MDFabButton
-from kivy.uix.togglebutton import ToggleButton
-from kivymd.uix.behaviors.toggle_behavior import MDToggleButton
-from kivymd.uix.behaviors import CommonElevationBehavior
+from kivymd.uix.button import MDFabButton, MDExtendedFabButton, MDExtendedFabButtonText
 from kivy.core.audio import SoundLoader
 # from kivy.core.window import Window
 
@@ -33,7 +30,7 @@ class MainLayout(MDBoxLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.md_bg_color = self.theme_cls.primaryColor
+        self.md_bg_color = self.theme_cls.inversePrimaryColor
         self.orientation = "vertical"
         # Functional attributes
         # Child widgets
@@ -60,8 +57,8 @@ class ClockLayout(MDBoxLayout):
         self.button_click = SoundLoader.load('assets/clock-button-press.mp3')
         # Child widgets
         self.control_buttons_layout = ControlButtonsLayout()
-        self.clock_button1 = ClockButton(state="down", disabled=True)
-        self.clock_button2 = ClockButton(state="normal", disabled=False)
+        self.clock_button1 = ClockButton(disabled=True)
+        self.clock_button2 = ClockButton(disabled=False)
         self.add_widget(self.clock_button1)
         self.add_widget(self.control_buttons_layout)
         self.add_widget(self.clock_button2)
@@ -79,11 +76,10 @@ class ClockLayout(MDBoxLayout):
         """
         Refresh buttons
         """
-        # import time  # ???
         while self.running:
             refresh_start = time.time()
             for btn in (self.clock_button1, self.clock_button2):
-                if btn.state == "normal":
+                if btn.disabled is False:
                     btn.time -= timedelta(seconds=REFRESH_TIME)
                     btn.update_text_from_time()
                     # print(btn.text)
@@ -91,7 +87,6 @@ class ClockLayout(MDBoxLayout):
                         self.stop_clock()
                         self.flagged = True
                         btn.disabled = True
-                        btn.md_bg_color_disabled = btn.background_normal
             refresh_duration = time.time() - refresh_start
             time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
 
@@ -116,12 +111,8 @@ class ClockLayout(MDBoxLayout):
         """
         self.stop_clock()  # Should be already stopped, but just in case
         self.flagged = False
-        self.clock_button1.state = "down"
-        self.clock_button2.state = "normal"
         self.clock_button1.disabled = True
         self.clock_button2.disabled = False
-        # self.clock_button1.md_bg_color_disabled = self.theme_cls.primary_dark
-        # self.clock_button2.md_bg_color_disabled = self.theme_cls.primary_dark
         self.clock_button1.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.clock_button2.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.clock_button1.update_text_from_time()
@@ -140,38 +131,31 @@ class ClockLayout(MDBoxLayout):
                 if button_obj == self.clock_button1:
                     self.clock_button1.disabled = True
                     self.clock_button2.disabled = False
-                    self.clock_button2.state = "normal"
                 elif button_obj == self.clock_button2:
                     self.clock_button2.disabled = True
                     self.clock_button1.disabled = False
-                    self.clock_button1.state = "normal"
         print("pressed clock button")
 
 
-class ClockButton(MDButton, ToggleButton, CommonElevationBehavior):
+class ClockButton(MDExtendedFabButton):
     """
     Clock button
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
+        self.color_map = "secondary"
         self.theme_width = "Custom"
         self.theme_height = "Custom"
-        self.theme_text_color = "Custom"
         self.size_hint = (1, 1)
         self.pos_hint = {"center_x": .5, "center_y": .5}
-        self.font_size = self.size[0]
         self.halign = "center"
         self.valign = "center"
-        # self.background_normal = self.theme_cls.primary_light
-        # self.background_down = self.theme_cls.primary_dark
-        # self.md_bg_color = self.theme_cls.primary_light
-        # self.md_bg_color_disabled = self.theme_cls.primary_dark
-        self.elevation = 6
         # Functional attributes
         self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.increment = timedelta(seconds=DEFAULT_INCREMENT)
-        self.text = ""
+        self.time_text = MDExtendedFabButtonText(theme_font_size="Custom", font_size=40)
+        self.add_widget(self.time_text)
         self.update_text_from_time()
 
     def update_text_from_time(self):
@@ -194,11 +178,12 @@ class ClockButton(MDButton, ToggleButton, CommonElevationBehavior):
             else:
                 t_text += "0"  # "00"
         # Updating attribute
-        self.text = t_text
+        self.time_text.text = t_text
 
     def on_press(self):
         self.time += self.increment
         self.update_text_from_time()
+        print(self.time_text.text)
 
 
 class ControlButtonsLayout(MDFloatLayout):
@@ -286,6 +271,7 @@ class PlayPauseButton(MDFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
+        self.color_map = "surface"
         self.icon = "play-pause"
         self.pos_hint = {"center_x": .5, "center_y": .75}
         # Functional attributes
@@ -299,6 +285,7 @@ class ResetButton(MDFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
+        self.color_map = "surface"
         self.icon = "refresh"
         self.pos_hint = {"center_x": .5, "center_y": .5}
         # Functional attributes
@@ -312,6 +299,7 @@ class SetupButton(MDFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
+        self.color_map = "surface"
         self.icon = "dots-horizontal"
         self.pos_hint = {"center_x": .5, "center_y": .25}
         # Functional attributes
@@ -324,10 +312,8 @@ class ClockApp(MDApp):
     """
     def build(self):
         # Visual attributes
-        self.theme_cls.material_style = "M3"
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Indigo"
-        self.theme_cls.primary_dark_hue = "800"
+        self.theme_cls.theme_style = "Light"
+        self.theme_cls.primary_palette = "Red"
         # Functional attributes
         # Child widgets
         self.root = MainLayout()
