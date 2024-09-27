@@ -144,7 +144,6 @@ class ClockButton(MDExtendedFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.color_map = "secondary"
         self.theme_width = "Custom"
         self.theme_height = "Custom"
         self.size_hint = (1, 1)
@@ -271,7 +270,6 @@ class PlayPauseButton(MDFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.color_map = "surface"
         self.icon = "play-pause"
         self.pos_hint = {"center_x": .5, "center_y": .75}
         # Functional attributes
@@ -285,7 +283,6 @@ class ResetButton(MDFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.color_map = "surface"
         self.icon = "refresh"
         self.pos_hint = {"center_x": .5, "center_y": .5}
         # Functional attributes
@@ -299,7 +296,6 @@ class SetupButton(MDFabButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.color_map = "surface"
         self.icon = "dots-horizontal"
         self.pos_hint = {"center_x": .5, "center_y": .25}
         # Functional attributes
@@ -312,8 +308,8 @@ class ClockApp(MDApp):
     """
     def build(self):
         # Visual attributes
-        self.theme_cls.theme_style = "Light"
-        self.theme_cls.primary_palette = "Red"
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Green"
         # Functional attributes
         # Child widgets
         self.root = MainLayout()
