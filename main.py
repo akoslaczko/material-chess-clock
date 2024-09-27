@@ -77,6 +77,7 @@ class ClockLayout(MDBoxLayout):
         self.running = False
         self.flagged = False
         self.button_click = SoundLoader.load('assets/clock-button-press.mp3')
+        self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
         # Child widgets
         self.control_buttons_layout = ControlButtonsLayout()
         self.clock_button1 = ClockButton(disabled=True)
@@ -104,6 +105,8 @@ class ClockLayout(MDBoxLayout):
                 if btn.disabled is False:
                     btn.time -= timedelta(seconds=REFRESH_TIME)
                     btn.update_text_from_time()
+                    if btn.time == timedelta(seconds=10):
+                        self.warning_sound.play()
                     if btn.time == timedelta(milliseconds=0):
                         self.stop_clock()
                         self.flagged = True
@@ -203,7 +206,7 @@ class ClockButton(MDExtendedFabButton):
                 t_text += "0"  # "00"
         # Updating attributes
         self.time_text.text = t_text
-        if self.disabled is not True:
+        if self.disabled is not True: # If the button is not disabled we also change the text color under 10 sec
             if self.time < timedelta(seconds=10):
                 self.time_text.color = self.theme_cls.errorColor
             elif self.time >= timedelta(seconds=10):
