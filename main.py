@@ -41,7 +41,7 @@ from kivymd.uix.list import (
 Window.size = [600, 330]
 
 REFRESH_TIME = 0.1
-DEFAULT_CLOCK_TIME = 0.1  # in minutes
+DEFAULT_CLOCK_TIME = 0.2  # in minutes
 DEFAULT_INCREMENT = 5  # in seconds
 
 
@@ -202,8 +202,12 @@ class ClockButton(MDExtendedFabButton):
                 t_text += t_list[3][0]  # + t_list[3][1]
             else:
                 t_text += "0"  # "00"
-        # Updating attribute
+        # Updating attributes
         self.time_text.text = t_text
+        if self.time < timedelta(seconds=10):
+            self.time_text.color = self.theme_cls.errorColor
+        elif self.time >= timedelta(seconds=10):
+            self.time_text.color = self.theme_cls.primaryColor
 
     def on_press(self):
         self.time += self.increment
