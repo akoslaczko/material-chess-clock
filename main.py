@@ -10,6 +10,7 @@ import re
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
+from kivy.logger import Logger
 
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -149,7 +150,7 @@ class ClockLayout(MDBoxLayout):
         """
         self.press_count += 1
         self.button_click.play()
-        print("pressed clock button, disabled_state_before", button_obj.disabled)
+        Logger.info("ClockApp: pressed clock button, 'disabled_state' before: %s", button_obj.disabled)
         if not self.flagged:
             if not self.running:
                 self.start_clock()
@@ -160,7 +161,7 @@ class ClockLayout(MDBoxLayout):
                 elif button_obj == self.clock_button2:
                     self.clock_button2.disabled = True
                     self.clock_button1.disabled = False
-        print("pressed clock button, disabled_state_after", button_obj.disabled)
+        Logger.info("ClockApp: pressed clock button, 'disabled_state' after: %s", button_obj.disabled)
 
 
 class ClockButton(MDExtendedFabButton):
@@ -220,7 +221,7 @@ class ClockButton(MDExtendedFabButton):
     def on_press(self):
         self.time += self.increment
         self.update_text_from_time()
-        print(self.time_text.text)
+        Logger.info("ClockApp: pressed clock button, 'time_text.text': %s", self.time_text.text)
 
 
 class ControlButtonsLayout(MDFloatLayout):
@@ -270,7 +271,7 @@ class ControlButtonsLayout(MDFloatLayout):
                     self.parent.stop_clock()
                 elif not self.parent.running:
                     self.parent.start_clock()
-            print("pressed playpause button")
+            Logger.info("ClockApp: pressed playpause button")
 
     def on_press_reset(self, button_obj):
         """
@@ -279,7 +280,7 @@ class ControlButtonsLayout(MDFloatLayout):
         if isinstance(button_obj, ResetButton):
             self.button_click.play()
             self.parent.reset_clock()
-            print("pressed reset button")
+            Logger.info("ClockApp: pressed reset button")
 
     def on_press_setup(self, button_obj):
         """
@@ -287,7 +288,7 @@ class ControlButtonsLayout(MDFloatLayout):
         """
         if isinstance(button_obj, SetupButton):
             self.button_click.play()
-            print("pressed setup button")
+            Logger.info("ClockApp: pressed setup button")
 
     def update_control_buttons_disabled_state(self):
         """
@@ -426,14 +427,14 @@ class SetupButton(MDExtendedFabButton):
         """
         On press fuction for setup dialog accept button
         """
-        print("Accepted setup")
+        Logger.info("ClockApp: pressed setup dialog 'Accept' button")
         self.dialog.dismiss()
 
     def on_press_dialog_cancel(self, *args):
         """
         On press fuction for setup dialog cancel button
         """
-        print("Cancelled setup")
+        Logger.info("ClockApp: pressed setup dialog 'Cancel' button")
         self.dialog.dismiss()
 
 
