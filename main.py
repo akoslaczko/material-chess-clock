@@ -8,12 +8,27 @@ from datetime import timedelta
 import re
 
 from kivy.core.audio import SoundLoader
+from kivy.uix.widget import Widget
 # from kivy.core.window import Window
 
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.button import MDExtendedFabButton, MDExtendedFabButtonText, MDExtendedFabButtonIcon
+from kivymd.uix.button import MDButton, MDButtonText, MDExtendedFabButton, MDExtendedFabButtonText, MDExtendedFabButtonIcon
+from kivymd.uix.dialog import (
+    MDDialog,
+    MDDialogIcon,
+    MDDialogHeadlineText,
+    MDDialogSupportingText,
+    MDDialogButtonContainer,
+    MDDialogContentContainer,
+)
+from kivymd.uix.divider import MDDivider
+from kivymd.uix.list import (
+    MDListItem,
+    MDListItemLeadingIcon,
+    MDListItemSupportingText,
+)
 
 # Window for testing
 # Window.size = [330, 600]
@@ -317,6 +332,62 @@ class SetupButton(MDExtendedFabButton):
         # Child Widgets
         self.icon = MDExtendedFabButtonIcon(icon="cog")
         self.add_widget(self.icon)
+
+    def on_press(self):
+        MDDialog(
+            # ----------------------------Icon-----------------------------
+            MDDialogIcon(
+                icon="cog",
+            ),
+            # -----------------------Headline text-------------------------
+            MDDialogHeadlineText(
+                text="Timecontrol Setup",
+            ),
+            # -----------------------Supporting text-----------------------
+            MDDialogSupportingText(
+                text="This will reset your current game state",
+            ),
+            # -----------------------Custom content------------------------
+            MDDialogContentContainer(
+                MDDivider(),
+                MDListItem(
+                    MDListItemLeadingIcon(
+                        icon="gmail",
+                    ),
+                    MDListItemSupportingText(
+                        text="KivyMD-library@yandex.com",
+                    ),
+                    theme_bg_color="Custom",
+                    md_bg_color=self.theme_cls.transparentColor,
+                ),
+                MDListItem(
+                    MDListItemLeadingIcon(
+                        icon="gmail",
+                    ),
+                    MDListItemSupportingText(
+                        text="kivydevelopment@gmail.com",
+                    ),
+                    theme_bg_color="Custom",
+                    md_bg_color=self.theme_cls.transparentColor,
+                ),
+                MDDivider(),
+                orientation="vertical",
+            ),
+            # ---------------------Button container------------------------
+            MDDialogButtonContainer(
+                Widget(),
+                MDButton(
+                    MDButtonText(text="Cancel"),
+                    style="text",
+                ),
+                MDButton(
+                    MDButtonText(text="Accept"),
+                    style="text",
+                ),
+                spacing="8dp",
+            ),
+            # -------------------------------------------------------------
+        ).open()
 
 
 class ClockApp(MDApp):
