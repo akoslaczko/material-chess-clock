@@ -184,7 +184,7 @@ class ClockButton(MDExtendedFabButton):
         # Child widgets
         self.time_text = MDExtendedFabButtonText(
             theme_font_size="Custom",
-            font_size=50,
+            font_size=80,
             ) # For debugging: theme_bg_color="Custom", md_bg_color=self.theme_cls.primaryFixedColor
         self.add_widget(self.time_text)
         self.update_text_from_time()
