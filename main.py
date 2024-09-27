@@ -156,7 +156,8 @@ class ClockButton(MDExtendedFabButton):
         # Functional attributes
         self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.increment = timedelta(seconds=DEFAULT_INCREMENT)
-        self.time_text = MDExtendedFabButtonText(theme_font_size="Custom", font_size=40)
+        # Child widgets
+        self.time_text = MDExtendedFabButtonText(theme_font_size="Custom", font_size=50)
         self.add_widget(self.time_text)
         self.update_text_from_time()
 
