@@ -35,6 +35,14 @@ from kivymd.uix.list import (
     MDListItemLeadingIcon,
     MDListItemSupportingText,
 )
+from kivymd.uix.textfield import (
+    MDTextField,
+    MDTextFieldLeadingIcon,
+    MDTextFieldHintText,
+    MDTextFieldHelperText,
+    MDTextFieldTrailingIcon,
+    MDTextFieldMaxLengthText,
+)
 
 # Window for testing
 # Window.size = [330, 600]
@@ -356,49 +364,61 @@ class SetupButton(MDExtendedFabButton):
             ),
             # -----------------------Headline text-------------------------
             MDDialogHeadlineText(
-                text="Timecontrol Setup",
+                text="Setup new timecontrol",
             ),
             # -----------------------Supporting text-----------------------
             MDDialogSupportingText(
-                text="This will reset your current game state",
+                text="CAUTION: accepting will reset current game!",
             ),
             # -----------------------Custom content------------------------
             MDDialogContentContainer(
-                MDDivider(),
-                MDListItem(
-                    MDListItemLeadingIcon(
-                        icon="gmail",
+                MDTextField(
+                    MDTextFieldLeadingIcon(
+                        icon="clock",
                     ),
-                    MDListItemSupportingText(
-                        text="KivyMD-library@yandex.com",
+                    MDTextFieldHintText(
+                        text="Starting time",
                     ),
-                    theme_bg_color="Custom",
-                    md_bg_color=self.theme_cls.transparentColor,
+                    MDTextFieldHelperText(
+                        text="In the format of 'hh:mm'",
+                        mode="persistent",
+                    ),
+                    MDTextFieldMaxLengthText(
+                        max_text_length=5,
+                    ),
+                    mode="outlined",
                 ),
-                MDListItem(
-                    MDListItemLeadingIcon(
-                        icon="gmail",
+                MDTextField(
+                    MDTextFieldLeadingIcon(
+                        icon="plus",
                     ),
-                    MDListItemSupportingText(
-                        text="kivydevelopment@gmail.com",
+                    MDTextFieldHintText(
+                        text="Increment",
                     ),
-                    theme_bg_color="Custom",
-                    md_bg_color=self.theme_cls.transparentColor,
+                    MDTextFieldHelperText(
+                        text="In the format of 'mm:ss'",
+                        mode="persistent",
+                    ),
+                    MDTextFieldMaxLengthText(
+                        max_text_length=5,
+                    ),
+                    mode="outlined",
                 ),
-                MDDivider(),
                 orientation="vertical",
+                spacing="30dp",
+                padding="30dp",
             ),
             # ---------------------Button container------------------------
             MDDialogButtonContainer(
                 Widget(),
                 MDButton(
                     MDButtonText(text="Cancel"),
-                    style="text",
+                    style="outlined",
                     on_press=self.on_press_dialog_cancel,
                 ),
                 MDButton(
                     MDButtonText(text="Accept"),
-                    style="text",
+                    style="filled",
                     on_release=self.on_press_dialog_accept,
                 ),
                 spacing="8dp",
