@@ -15,7 +15,7 @@ from kivymd.uix.behaviors.toggle_behavior import MDToggleButton
 from kivymd.uix.behaviors import CommonElevationBehavior
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.core.audio import SoundLoader
-from kivy.core.window import Window
+# from kivy.core.window import Window
 
 # Window for testing
 # Window.size = [330, 600]
@@ -84,7 +84,7 @@ class ClockLayout(MDBoxLayout):
         self.clock_button1.bind(on_press=self.on_clock_button_press)
         self.clock_button2.bind(on_press=self.on_clock_button_press)
 
-    def start_threading(self, dt):
+    def start_threading(self, *args):
         """
         Threading
         """
@@ -142,7 +142,7 @@ class ClockLayout(MDBoxLayout):
         self.clock_button1.update_text_from_time()
         self.clock_button2.update_text_from_time()
 
-    def on_clock_button_press(self, button_obj, *args):
+    def on_clock_button_press(self, button_obj):
         """
         On press method for clock buttons
         """
@@ -252,7 +252,7 @@ class ControlButtonsLayout(MDFloatLayout):
         max_child_width = max(child_widths) if len(child_widths) > 0 else 0
         self.width = max_child_width
 
-    def on_press_playpause(self, button_obj, *args):
+    def on_press_playpause(self, button_obj):
         """
         On press method for Play/Pause button
         """
@@ -265,7 +265,7 @@ class ControlButtonsLayout(MDFloatLayout):
                     self.parent.start_clock()
             print("pressed playpause button")
 
-    def on_press_reset(self, button_obj, *args):
+    def on_press_reset(self, button_obj):
         """
         On press method for Reset button
         """
@@ -274,7 +274,7 @@ class ControlButtonsLayout(MDFloatLayout):
             self.parent.reset_clock()
             print("pressed reset button")
 
-    def on_press_setup(self, button_obj, *args):
+    def on_press_setup(self, button_obj):
         """
         On press method for Setup button
         """
