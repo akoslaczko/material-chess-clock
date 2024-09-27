@@ -38,7 +38,7 @@ from kivymd.uix.list import (
 
 # Window for testing
 # Window.size = [330, 600]
-Window.size = [600, 330]
+Window.size = [800, 440]
 
 REFRESH_TIME = 0.1
 DEFAULT_CLOCK_TIME = 0.2  # in minutes
