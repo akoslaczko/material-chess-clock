@@ -10,10 +10,10 @@ import re
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.button import MDFlatButton, MDFloatingActionButton
+from kivymd.uix.button import MDButton, MDButtonText, MDFabButton
+from kivy.uix.togglebutton import ToggleButton
 from kivymd.uix.behaviors.toggle_behavior import MDToggleButton
 from kivymd.uix.behaviors import CommonElevationBehavior
-from kivymd.uix.toolbar import MDTopAppBar
 from kivy.core.audio import SoundLoader
 # from kivy.core.window import Window
 
@@ -33,29 +33,14 @@ class MainLayout(MDBoxLayout):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Visual attributes
-        self.md_bg_color = self.theme_cls.primary_color
+        self.md_bg_color = self.theme_cls.primaryColor
         self.orientation = "vertical"
         # Functional attributes
         # Child widgets
-        self.clock_toolbar = ClockToolbar()
         self.clock_layout = ClockLayout()
-        self.add_widget(self.clock_toolbar)
+        # self.add_widget(self.clock_toolbar)
         self.add_widget(self.clock_layout)
 
-
-class ClockToolbar(MDTopAppBar):
-    """
-    Toolbar
-    """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        # Visual attributes
-        self.title = "Material Chess Clock"
-        self.type_height = "small"
-        self.headline_text = "Headline"
-        self.md_bg_color = self.theme_cls.primary_color
-        self.left_action_items = [["arrow-left", lambda x: x]]
-        self.right_action_items = [["dots-vertical", lambda x: x]]
 
 
 class ClockLayout(MDBoxLayout):
@@ -135,8 +120,8 @@ class ClockLayout(MDBoxLayout):
         self.clock_button2.state = "normal"
         self.clock_button1.disabled = True
         self.clock_button2.disabled = False
-        self.clock_button1.md_bg_color_disabled = self.theme_cls.primary_dark
-        self.clock_button2.md_bg_color_disabled = self.theme_cls.primary_dark
+        # self.clock_button1.md_bg_color_disabled = self.theme_cls.primary_dark
+        # self.clock_button2.md_bg_color_disabled = self.theme_cls.primary_dark
         self.clock_button1.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.clock_button2.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.clock_button1.update_text_from_time()
@@ -163,7 +148,7 @@ class ClockLayout(MDBoxLayout):
         print("pressed clock button")
 
 
-class ClockButton(MDFlatButton, MDToggleButton, CommonElevationBehavior):
+class ClockButton(MDButton, ToggleButton, CommonElevationBehavior):
     """
     Clock button
     """
@@ -178,10 +163,10 @@ class ClockButton(MDFlatButton, MDToggleButton, CommonElevationBehavior):
         self.font_size = self.size[0]
         self.halign = "center"
         self.valign = "center"
-        self.background_normal = self.theme_cls.primary_light
-        self.background_down = self.theme_cls.primary_dark
-        self.md_bg_color = self.theme_cls.primary_light
-        self.md_bg_color_disabled = self.theme_cls.primary_dark
+        # self.background_normal = self.theme_cls.primary_light
+        # self.background_down = self.theme_cls.primary_dark
+        # self.md_bg_color = self.theme_cls.primary_light
+        # self.md_bg_color_disabled = self.theme_cls.primary_dark
         self.elevation = 6
         # Functional attributes
         self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
@@ -294,7 +279,7 @@ class ControlButtonsLayout(MDFloatLayout):
             self.setup_button.disabled = False
 
 
-class PlayPauseButton(MDFloatingActionButton):
+class PlayPauseButton(MDFabButton):
     """
     Play/Pause button
     """
@@ -307,7 +292,7 @@ class PlayPauseButton(MDFloatingActionButton):
         self.disabled = False
 
 
-class ResetButton(MDFloatingActionButton):
+class ResetButton(MDFabButton):
     """
     Reset button
     """
@@ -320,7 +305,7 @@ class ResetButton(MDFloatingActionButton):
         self.disabled = False
 
 
-class SetupButton(MDFloatingActionButton):
+class SetupButton(MDFabButton):
     """
     Setup button
     """
