@@ -125,6 +125,7 @@ class ClockLayout(MDBoxLayout):
         """
         self.press_count += 1
         self.button_click.play()
+        print("pressed clock button, disabled_state_before", button_obj.disabled)
         if not self.flagged:
             if not self.running:
                 self.start_clock()
@@ -135,7 +136,7 @@ class ClockLayout(MDBoxLayout):
                 elif button_obj == self.clock_button2:
                     self.clock_button2.disabled = True
                     self.clock_button1.disabled = False
-        print("pressed clock button")
+        print("pressed clock button, disabled_state_after", button_obj.disabled)
 
 
 class ClockButton(MDExtendedFabButton):
