@@ -80,6 +80,7 @@ class ClockLayout(MDBoxLayout):
         self.flagged = False
         self.button_click = SoundLoader.load('assets/clock-button-press.mp3')
         self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
+        self.flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
         # Child widgets
         self.control_buttons_layout = ControlButtonsLayout()
         self.clock_button1 = ClockButton(disabled=True)
@@ -111,6 +112,7 @@ class ClockLayout(MDBoxLayout):
                         self.warning_sound.play()
                     if btn.time == timedelta(milliseconds=0):
                         self.stop_clock()
+                        self.flagging_sound.play()
                         self.flagged = True
                         btn.disabled = True
             refresh_duration = time.time() - refresh_start
