@@ -383,6 +383,9 @@ class SetupButton(MDExtendedFabButton):
                         max_text_length=5,
                     ),
                     mode="outlined",
+                    validator="time",
+                    text="00:01",
+                    id="starting_time",
                 ),
                 MDTextField(
                     MDTextFieldLeadingIcon(
@@ -399,10 +402,14 @@ class SetupButton(MDExtendedFabButton):
                         max_text_length=5,
                     ),
                     mode="outlined",
+                    validator="time",
+                    text="00:05",
+                    id="increment",
                 ),
                 orientation="vertical",
                 spacing="30dp",
                 padding="30dp",
+                id="setup_dialog_content",
             ),
             # ---------------------Button container------------------------
             MDDialogButtonContainer(
@@ -429,7 +436,16 @@ class SetupButton(MDExtendedFabButton):
         """
         On press fuction for setup dialog accept button
         """
-        Logger.info("ChessClockApp: Pressed setup dialog 'Accept' button")
+        # Converting starting time and increment inputs      
+        starting_time, increment = [int(time_list[0])*60 + int(time_list[1]) for time_list in [re.split("[:.]", time_string) for time_string in [self.dialog.get_ids().starting_time.text, self.dialog.get_ids().increment.text]]]
+        Logger.info("ChessClockApp: Pressed setup dialog 'Accept' button, 'starting_time' and 'increment': %s", [starting_time, increment])
+        # Updating default variables
+        global DEFAULT_CLOCK_TIME
+        DEFAULT_CLOCK_TIME = starting_time
+        global DEFAULT_INCREMENT
+        DEFAULT_INCREMENT = increment
+        # Restart clock to apply effects
+        self.parent.parent.reset_clock()
         self.dialog.dismiss()
 
     def on_press_dialog_cancel(self, *args):
