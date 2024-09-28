@@ -197,22 +197,22 @@ class ClockButton(MDExtendedFabButton):
         Update the clock button's time-text
         """
         # Split timedelta string
-        t_list = re.split("[:.]", str(self.time))
-        t_text = ""
+        time_list = re.split("[:.]", str(self.time))
+        time_text = ""
         # Adding hours if necessary
-        if int(t_list[0]) > 0:
-            t_text += t_list[0] + ":"
+        if int(time_list[0]) > 0:
+            time_text += time_list[0] + ":"
         # Adding minutes and seconds
-        t_text += t_list[1] + ":" + t_list[2]
+        time_text += time_list[1] + ":" + time_list[2]
         # Under 10 sec we increase the resolution
         if self.time < timedelta(seconds=10):
-            t_text += "."
-            if len(t_list) >= 4:
-                t_text += t_list[3][0]  # + t_list[3][1]
+            time_text += "."
+            if len(time_list) >= 4:
+                time_text += time_list[3][0]  # + time_list[3][1]
             else:
-                t_text += "0"  # "00"
+                time_text += "0"  # "00"
         # Updating attributes
-        self.time_text.text = t_text
+        self.time_text.text = time_text
         if self.disabled is not True:
             # If the button is not disabled we also change the text color under 10 sec
             if self.time < timedelta(seconds=10):
