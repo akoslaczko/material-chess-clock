@@ -281,7 +281,6 @@ class ControlButtonsLayout(MDFloatLayout):
         """
         if isinstance(button_obj, ResetButton):
             self.button_click.play()
-            self.parent.reset_clock()
             Logger.info("ChessClockApp: Pressed reset button")
 
     def on_press_setup(self, button_obj):
@@ -336,6 +335,48 @@ class ResetButton(MDExtendedFabButton):
         # Child Widgets
         self.icon = MDExtendedFabButtonIcon(icon="refresh")
         self.add_widget(self.icon)
+        self.dialog = MDDialog(
+            MDDialogHeadlineText(
+                text="Reset clock confirmation",
+                halign="left",
+            ),
+            MDDialogSupportingText(
+                text="Do you really want to reset the ongoing game?",
+                halign="left",
+            ),
+            MDDialogButtonContainer(
+                Widget(),
+                MDButton(
+                    MDButtonText(text="Cancel"),
+                    style="outlined",
+                    on_press=self.on_press_dialog_cancel,
+                ),
+                MDButton(
+                    MDButtonText(text="Accept"),
+                    style="filled",
+                    on_release=self.on_press_dialog_accept,
+                ),
+                spacing="8dp",
+            ),
+        )
+
+    def on_press(self):
+        self.dialog.open()
+
+    def on_press_dialog_cancel(self, *args):
+        """
+        On press fuction for reset dialog cancel button
+        """
+        Logger.info("ChessClockApp: Pressed reset dialog 'Cancel' button")
+        self.dialog.dismiss()
+
+    def on_press_dialog_accept(self, *args):
+        """
+        On press fuction for reset dialog accept button
+        """
+        Logger.info("ChessClockApp: Pressed reset dialog 'Accept' button")
+        self.parent.parent.reset_clock()
+        self.dialog.dismiss()
 
 
 class SetupButton(MDExtendedFabButton):
