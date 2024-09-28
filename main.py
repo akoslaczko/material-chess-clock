@@ -477,8 +477,9 @@ class SetupButton(MDExtendedFabButton):
         """
         On press fuction for setup dialog accept button
         """
-        # Converting starting time and increment inputs      
-        starting_time, increment = [int(time_list[0])*60 + int(time_list[1]) for time_list in [re.split("[:.]", time_string) for time_string in [self.dialog.get_ids().starting_time.text, self.dialog.get_ids().increment.text]]]
+        # Converting starting time and increment inputs
+        starting_time = self.convert_time_string(self.dialog.get_ids().starting_time.text)
+        increment = self.convert_time_string(self.dialog.get_ids().increment.text)
         Logger.info("ChessClockApp: Pressed setup dialog 'Accept' button, 'starting_time' and 'increment': %s", [starting_time, increment])
         # Updating default variables
         global DEFAULT_CLOCK_TIME
@@ -495,6 +496,15 @@ class SetupButton(MDExtendedFabButton):
         """
         Logger.info("ChessClockApp: Pressed setup dialog 'Cancel' button")
         self.dialog.dismiss()
+
+    def convert_time_string(self, time_string):
+        """
+        Helper method for converting formatted time strings
+        """
+        time_list = re.split("[:.]", time_string)
+        time_int = int(time_list[0])*60 + int(time_list[1])
+        return time_int
+
 
 
 class ChessClockApp(MDApp):
