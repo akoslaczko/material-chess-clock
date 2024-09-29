@@ -288,6 +288,7 @@ class MCCApp(MDApp):
             ),
             # ------------------------------- Input fields ------------------------------- #
             MDDialogContentContainer(
+                # ------------------------------- Starting time ------------------------------ #
                 MDTextField(
                     MDTextFieldLeadingIcon(
                         icon="clock",
@@ -307,6 +308,7 @@ class MCCApp(MDApp):
                     text="00:01",
                     id="starting_time",
                 ),
+                # --------------------------------- Increment -------------------------------- #
                 MDTextField(
                     MDTextFieldLeadingIcon(
                         icon="plus",
