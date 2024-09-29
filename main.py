@@ -146,9 +146,6 @@ class MCCApp(MDApp):
         self.control_button_click = SoundLoader.load('assets/control-button-press.mp3')
         self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
         self.flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
-        # Pointer attributes
-        self.white_side = {}
-        self.black_side = {}
         # Dialogs
         self.reset_dialog = MDDialog(
             # ---------------------------------- Header ---------------------------------- #
@@ -327,15 +324,25 @@ class MCCApp(MDApp):
             md_bg_color=self.theme_cls.inversePrimaryColor,
             id="mcc_root_layout",
         )
-        self.white_side = {
+        return self.root
+    
+    def get_white_side(self):
+        """
+        Getter method that returns the widgets belonging to White
+        """
+        return {
             'button': self.root.get_ids().mcc_clock_button_white,
             'time_text': self.root.get_ids().mcc_time_text_white,
         }
-        self.black_side = {
+
+    def get_black_side(self):
+        """
+        Getter method that returns the widgets belonging to Black
+        """
+        return {
             'button': self.root.get_ids().mcc_clock_button_black,
             'time_text': self.root.get_ids().mcc_time_text_black,
         }
-        return self.root
 
     def refresh_time_text(self):
         """
@@ -343,11 +350,10 @@ class MCCApp(MDApp):
         """
         while self.running:
             refresh_start = time.time()
-            for side in (self.white_side, self.black_side):
+            for side in (self.get_white_side(), self.get_black_side()):
                 if not side['button'].disabled:
                     side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
                     side['time_text'].refresh_text()
-                    Logger.info("MCCApp: time: %s", side['time_text'].text)
                     if side['time_text'].time == timedelta(seconds=10):
                         self.warning_sound.play()
                     if side['time_text'].time == timedelta(milliseconds=0):
@@ -393,12 +399,12 @@ class MCCApp(MDApp):
         if self.running:
             self.stop_clock()
         self.flagged = False
-        self.white_side['button'].disabled = True
-        self.black_side['button'].disabled = False
-        self.white_side['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-        self.black_side['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-        self.white_side['time_text'].refresh_text()
-        self.black_side['time_text'].refresh_text()
+        self.get_white_side()['button'].disabled = True
+        self.get_black_side()['button'].disabled = False
+        self.get_white_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.get_black_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.get_white_side()['time_text'].refresh_text()
+        self.get_black_side()['time_text'].refresh_text()
 
     def on_press_clock_button(self, *args):
         """
@@ -410,16 +416,16 @@ class MCCApp(MDApp):
                 self.start_clock()
             if len(args) > 0 and isinstance(args[0], MCCClockButton):
                 button = args[0]
-                if button == self.white_side['button']:
-                    self.white_side['button'].disabled = True
-                    self.white_side['time_text'].time += self.white_side['time_text'].increment
-                    self.white_side['time_text'].refresh_text()
-                    self.black_side['button'].disabled = False
-                elif button == self.black_side['button']:
-                    self.black_side['button'].disabled = True
-                    self.black_side['time_text'].time += self.white_side['time_text'].increment
-                    self.black_side['time_text'].refresh_text()
-                    self.white_side['button'].disabled = False
+                if button == self.get_white_side()['button']:
+                    self.get_white_side()['button'].disabled = True
+                    self.get_white_side()['time_text'].time += self.get_white_side()['time_text'].increment
+                    self.get_white_side()['time_text'].refresh_text()
+                    self.get_black_side()['button'].disabled = False
+                elif button == self.get_black_side()['button']:
+                    self.get_black_side()['button'].disabled = True
+                    self.get_black_side()['time_text'].time += self.get_white_side()['time_text'].increment
+                    self.get_black_side()['time_text'].refresh_text()
+                    self.get_white_side()['button'].disabled = False
             Logger.info("ChessClockApp: Pressed clock button")
 
     def on_press_playpause_button(self, *args):
