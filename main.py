@@ -2,6 +2,8 @@
 Material Design style chess clock app using KivyMD
 """
 
+# pylint: disable=E0611 # Disable the error related to importing from pxd files (temporary solution)
+
 import threading
 import time
 from datetime import timedelta
@@ -440,7 +442,7 @@ class MCCApp(MDApp):
                     self.get_black_side()['button'].disabled = True
                     self.get_black_side()['time_text'].time += self.get_white_side()['time_text'].increment
                     self.get_white_side()['button'].disabled = False
-            Logger.info("ChessClockApp: Pressed clock button")
+            Logger.info("MCCApp: Pressed clock button")
 
     def on_press_playpause_button(self, *args):
         """
@@ -452,7 +454,7 @@ class MCCApp(MDApp):
                 self.stop_clock()
             elif not self.running:
                 self.start_clock()
-        Logger.info("ChessClockApp: Pressed playpause button")
+        Logger.info("MCCApp: Pressed playpause button")
 
     def on_press_reset_button(self, *args):
         """
@@ -460,7 +462,7 @@ class MCCApp(MDApp):
         """
         self.control_button_click.play()
         self.reset_dialog.open()
-        Logger.info("ChessClockApp: Pressed reset button")
+        Logger.info("MCCApp: Pressed reset button")
 
     def on_press_setup_button(self, *args):
         """
@@ -468,20 +470,20 @@ class MCCApp(MDApp):
         """
         self.control_button_click.play()
         self.setup_dialog.open()
-        Logger.info("ChessClockApp: Pressed setup button")
+        Logger.info("MCCApp: Pressed setup button")
 
     def on_press_reset_dialog_cancel(self, *args):
         """
         On press method for reset dialog cancel button
         """
-        Logger.info("ChessClockApp: Pressed reset dialog 'Cancel' button")
+        Logger.info("MCCApp: Pressed reset dialog 'Cancel' button")
         self.reset_dialog.dismiss()
 
     def on_press_reset_dialog_accept(self, *args):
         """
         On press method for reset dialog accept button
         """
-        Logger.info("ChessClockApp: Pressed reset dialog 'Accept' button")
+        Logger.info("MCCApp: Pressed reset dialog 'Accept' button")
         self.reset_clock()
         self.reset_dialog.dismiss()
 
@@ -489,7 +491,7 @@ class MCCApp(MDApp):
         """
         On press method for setup dialog cancel button
         """
-        Logger.info("ChessClockApp: Pressed setup dialog 'Cancel' button")
+        Logger.info("MCCApp: Pressed setup dialog 'Cancel' button")
         self.setup_dialog.dismiss()
 
     def on_press_setup_dialog_accept(self, *args):
@@ -499,7 +501,7 @@ class MCCApp(MDApp):
         # Converting starting time and increment inputs
         starting_time = helpers.convert_time_string_to_integer(self.setup_dialog.get_ids().starting_time.text)
         increment = helpers.convert_time_string_to_integer(self.setup_dialog.get_ids().increment.text)
-        Logger.info("ChessClockApp: Pressed setup dialog 'Accept' button, 'starting_time' and 'increment': %s", [starting_time, increment])
+        Logger.info("MCCApp: Pressed setup dialog 'Accept' button, 'starting_time' and 'increment': %s", [starting_time, increment])
         # Updating default variables
         global DEFAULT_CLOCK_TIME
         DEFAULT_CLOCK_TIME = starting_time
