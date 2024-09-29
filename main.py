@@ -152,6 +152,106 @@ class MCCApp(MDApp):
         # Pointer attributes
         self.white_side = {}
         self.black_side = {}
+        # Dialogs
+        self.reset_dialog = MDDialog(
+            MDDialogHeadlineText(
+                text="Reset clock confirmation",
+                halign="left",
+            ),
+            MDDialogSupportingText(
+                text="Do you really want to reset the ongoing game?",
+                halign="left",
+            ),
+            MDDialogButtonContainer(
+                Widget(),
+                MDButton(
+                    MDButtonText(text="Cancel"),
+                    style="outlined",
+                    on_press=self.on_press_reset_dialog_cancel,
+                ),
+                MDButton(
+                    MDButtonText(text="Accept"),
+                    style="filled",
+                    on_press=self.on_press_reset_dialog_accept,
+                ),
+                spacing="8dp",
+            ),
+        )
+        self.setup_dialog = MDDialog(
+            # ----------------------------Icon-----------------------------
+            MDDialogIcon(
+                icon="cog",
+            ),
+            # -----------------------Headline text-------------------------
+            MDDialogHeadlineText(
+                text="Setup new time-control",
+            ),
+            # -----------------------Supporting text-----------------------
+            MDDialogSupportingText(
+                text="CAUTION: accepting will reset the clock!",
+            ),
+            # -----------------------Custom content------------------------
+            MDDialogContentContainer(
+                MDTextField(
+                    MDTextFieldLeadingIcon(
+                        icon="clock",
+                    ),
+                    MDTextFieldHintText(
+                        text="Starting time",
+                    ),
+                    MDTextFieldHelperText(
+                        text="In the format of 'hh:mm'",
+                        mode="persistent",
+                    ),
+                    MDTextFieldMaxLengthText(
+                        max_text_length=5,
+                    ),
+                    mode="outlined",
+                    validator="time",
+                    text="00:01",
+                    id="starting_time",
+                ),
+                MDTextField(
+                    MDTextFieldLeadingIcon(
+                        icon="plus",
+                    ),
+                    MDTextFieldHintText(
+                        text="Increment",
+                    ),
+                    MDTextFieldHelperText(
+                        text="In the format of 'mm:ss'",
+                        mode="persistent",
+                    ),
+                    MDTextFieldMaxLengthText(
+                        max_text_length=5,
+                    ),
+                    mode="outlined",
+                    validator="time",
+                    text="00:05",
+                    id="increment",
+                ),
+                orientation="vertical",
+                spacing="30dp",
+                padding="30dp",
+                id="setup_dialog_content",
+            ),
+            # ---------------------Button container------------------------
+            MDDialogButtonContainer(
+                Widget(),
+                MDButton(
+                    MDButtonText(text="Cancel"),
+                    style="outlined",
+                    on_press=self.on_press_setup_dialog_cancel,
+                ),
+                MDButton(
+                    MDButtonText(text="Accept"),
+                    style="filled",
+                    on_release=self.on_press_setup_dialog_accept,
+                ),
+                spacing="8dp",
+            ),
+            # -------------------------------------------------------------
+        )
 
     def build(self):
         # Theming
@@ -270,16 +370,30 @@ class MCCApp(MDApp):
         self.thread.join()
         self.update_control_buttons_disabled_state()
 
+    def update_control_buttons_disabled_state(self):
+        """
+        Update clock button's disabled state
+        """
+        if self.running:
+            self.root.get_ids().mcc_reset_button.disabled = True
+            self.root.get_ids().mcc_setup_button.disabled = True
+        elif not self.running:
+            self.root.get_ids().mcc_reset_button.disabled = False
+            self.root.get_ids().mcc_setup_button.disabled = False
+
     def reset_clock(self):
         """
         Reset clock
         """
-        self.stop_clock()  # Should be already stopped, but just in case
+        if self.running:
+            self.stop_clock()
         self.flagged = False
         self.white_side['button'].disabled = True
         self.black_side['button'].disabled = False
         self.white_side['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.black_side['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.white_side['time_text'].refresh_text()
+        self.black_side['time_text'].refresh_text()
 
     def on_press_clock_button(self, *args):
         """
@@ -320,6 +434,7 @@ class MCCApp(MDApp):
         On press method for Reset button
         """
         self.control_button_click.play()
+        self.reset_dialog.open()
         Logger.info("ChessClockApp: Pressed reset button")
 
     def on_press_setup_button(self, *args):
@@ -327,18 +442,55 @@ class MCCApp(MDApp):
         On press method for Setup button
         """
         self.control_button_click.play()
+        self.setup_dialog.open()
         Logger.info("ChessClockApp: Pressed setup button")
 
-    def update_control_buttons_disabled_state(self):
+    def on_press_reset_dialog_cancel(self, *args):
         """
-        Update clock button's disabled state
+        On press fuction for reset dialog cancel button
         """
-        if self.running:
-            self.root.get_ids().mcc_reset_button.disabled = True
-            self.root.get_ids().mcc_setup_button.disabled = True
-        elif not self.running:
-            self.root.get_ids().mcc_reset_button.disabled = False
-            self.root.get_ids().mcc_setup_button.disabled = False
+        Logger.info("ChessClockApp: Pressed reset dialog 'Cancel' button")
+        self.reset_dialog.dismiss()
+
+    def on_press_reset_dialog_accept(self, *args):
+        """
+        On press fuction for reset dialog accept button
+        """
+        Logger.info("ChessClockApp: Pressed reset dialog 'Accept' button")
+        self.reset_clock()
+        self.reset_dialog.dismiss()
+
+    def on_press_setup_dialog_cancel(self, *args):
+        """
+        On press fuction for setup dialog cancel button
+        """
+        Logger.info("ChessClockApp: Pressed setup dialog 'Cancel' button")
+        self.setup_dialog.dismiss()
+
+    def on_press_setup_dialog_accept(self, *args):
+        """
+        On press fuction for setup dialog accept button
+        """
+        # Converting starting time and increment inputs
+        starting_time = self.convert_time_string(self.setup_dialog.get_ids().starting_time.text)
+        increment = self.convert_time_string(self.setup_dialog.get_ids().increment.text)
+        Logger.info("ChessClockApp: Pressed setup dialog 'Accept' button, 'starting_time' and 'increment': %s", [starting_time, increment])
+        # Updating default variables
+        global DEFAULT_CLOCK_TIME
+        DEFAULT_CLOCK_TIME = starting_time
+        global DEFAULT_INCREMENT
+        DEFAULT_INCREMENT = increment
+        # Restart clock to apply effects
+        self.reset_clock()
+        self.setup_dialog.dismiss()
+
+    def convert_time_string(self, time_string):
+        """
+        Helper method for converting formatted time strings
+        """
+        time_list = re.split("[:.]", time_string)
+        time_int = int(time_list[0])*60 + int(time_list[1])
+        return time_int
 
     def on_stop(self):
         self.stop_clock()
