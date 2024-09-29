@@ -126,9 +126,24 @@ class MCCTimeText(MDExtendedFabButtonText):
             elif self.time >= timedelta(seconds=10):
                 self.color = self.theme_cls.primaryColor
 
+
+class MCCControlButtonsLayout(MDFloatLayout):
+    """
+    Container widget for the clock control buttons (eg Play/Pause, Reset, etc...)
+    """
+    def adjust_width(self):
+        """
+        Dynamically adjust width based on max child widget size
+        """
+        child_widths = [child.width for child in self.children if hasattr(child, 'width')]
+        max_child_width = max(child_widths) if len(child_widths) > 0 else 0
+        self.width = max_child_width
+
+
 # ---------------------------------------------------------------------------- #
 #                             The main application                             #
 # ---------------------------------------------------------------------------- #
+
 
 class MCCApp(MDApp):
     """
@@ -169,7 +184,7 @@ class MCCApp(MDApp):
                     id="mcc_clock_button_white",
                 ),
                 # --------------------- Container for the control buttons -------------------- #
-                MDFloatLayout(
+                MCCControlButtonsLayout(
                     # ----------------------------- Play/Pause button ---------------------------- #
                     MDExtendedFabButton(
                         MDExtendedFabButtonIcon(
@@ -333,6 +348,8 @@ class MCCApp(MDApp):
             ),
             # ---------------------------------------------------------------------------- #
         )
+        # Adjust the width of the container of clock control buttons
+        self.root.get_ids().mcc_control_buttons_layout.adjust_width()
         return self.root
     
     def get_white_side(self):
