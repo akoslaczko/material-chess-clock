@@ -330,7 +330,7 @@ class MCCApp(MDApp):
         self.white_side = {
             'button': self.root.get_ids().mcc_clock_button_white,
             'time_text': self.root.get_ids().mcc_time_text_white,
-            }
+        }
         self.black_side = {
             'button': self.root.get_ids().mcc_clock_button_black,
             'time_text': self.root.get_ids().mcc_time_text_black,
