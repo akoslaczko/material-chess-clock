@@ -11,6 +11,7 @@ from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
 from kivy.logger import Logger
+from kivy.properties import ObjectProperty
 
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import DeclarativeBehavior
@@ -88,20 +89,23 @@ class MCCTimeText(MDExtendedFabButtonText):
     """
     Widget representing the remaining time of the players
     """
+    # Define a new property for clock time.
+    # Necessary for automatically updating the related 'text' and 'color' attributes
+    time = ObjectProperty()
+
     def __init__(self, *args, **kwargs):
-        # New attributes
-        self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-        self.increment = timedelta(seconds=DEFAULT_INCREMENT)
         super().__init__(*args, **kwargs)
-        self.refresh_text()
         # Setting existing visual attributes
         self.theme_font_size = "Custom"
         self.font_size = 80
+        # Setup clock time related attributes
+        self.bind(time=self.on_change_time)
+        self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.increment = timedelta(seconds=DEFAULT_INCREMENT)
 
-    def refresh_text(self):
+    def on_change_time(self, *args):
         """
-        Method for updating the 'text' attribute based on the 'time' attribute
-        @property way currently doesn't work
+        Bound method for updating the 'text' attribute based on the 'time' attribute
         """
         # Split timedelta string
         time_list = re.split("[:.]", str(self.time))
@@ -381,7 +385,6 @@ class MCCApp(MDApp):
             for side in (self.get_white_side(), self.get_black_side()):
                 if not side['button'].disabled:
                     side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
-                    side['time_text'].refresh_text()
                     if side['time_text'].time == timedelta(seconds=10):
                         self.warning_sound.play()
                     if side['time_text'].time == timedelta(milliseconds=0):
@@ -431,8 +434,6 @@ class MCCApp(MDApp):
         self.get_black_side()['button'].disabled = False
         self.get_white_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
         self.get_black_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-        self.get_white_side()['time_text'].refresh_text()
-        self.get_black_side()['time_text'].refresh_text()
 
     def on_press_clock_button(self, *args):
         """
@@ -447,12 +448,10 @@ class MCCApp(MDApp):
                 if button == self.get_white_side()['button']:
                     self.get_white_side()['button'].disabled = True
                     self.get_white_side()['time_text'].time += self.get_white_side()['time_text'].increment
-                    self.get_white_side()['time_text'].refresh_text()
                     self.get_black_side()['button'].disabled = False
                 elif button == self.get_black_side()['button']:
                     self.get_black_side()['button'].disabled = True
                     self.get_black_side()['time_text'].time += self.get_white_side()['time_text'].increment
-                    self.get_black_side()['time_text'].refresh_text()
                     self.get_white_side()['button'].disabled = False
             Logger.info("ChessClockApp: Pressed clock button")
 
