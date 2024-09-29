@@ -40,13 +40,19 @@ from kivymd.uix.textfield import (
 )
 
 # Window for testing
-# Window.size = [330, 600]
 Window.size = [1200, 600]
+
+# ---------------------------------------------------------------------------- #
+#                               Default variables                              #
+# ---------------------------------------------------------------------------- #
 
 REFRESH_TIME = 0.1 # in seconds
 DEFAULT_CLOCK_TIME = 0.2  # in minutes
 DEFAULT_INCREMENT = 5  # in seconds
 
+# ---------------------------------------------------------------------------- #
+#                                Custom classes                                #
+# ---------------------------------------------------------------------------- #
 
 class MCCRootLayout(MDBoxLayout, DeclarativeBehavior):
     """
@@ -120,18 +126,9 @@ class MCCTimeText(MDExtendedFabButtonText):
             elif self.time >= timedelta(seconds=10):
                 self.color = self.theme_cls.primaryColor
 
-
-class MCCControlButtonsLayout(MDFloatLayout):
-    """
-    Control buttons layout
-    """
-    def adjust_width(self):
-        """
-        Dynamically adjust width based on max child widget size
-        """
-        child_widths = [child.width for child in self.children if hasattr(child, 'width')]
-        max_child_width = max(child_widths) if len(child_widths) > 0 else 0
-        self.width = max_child_width
+# ---------------------------------------------------------------------------- #
+#                             The main application                             #
+# ---------------------------------------------------------------------------- #
 
 class MCCApp(MDApp):
     """
@@ -154,14 +151,17 @@ class MCCApp(MDApp):
         self.black_side = {}
         # Dialogs
         self.reset_dialog = MDDialog(
+            # ---------------------------------- Header ---------------------------------- #
             MDDialogHeadlineText(
                 text="Reset clock confirmation",
                 halign="left",
             ),
+            # ----------------------------------- Text ----------------------------------- #
             MDDialogSupportingText(
                 text="Do you really want to reset the ongoing game?",
                 halign="left",
             ),
+            # ----------------------------- Button container ----------------------------- #
             MDDialogButtonContainer(
                 Widget(),
                 MDButton(
@@ -176,21 +176,20 @@ class MCCApp(MDApp):
                 ),
                 spacing="8dp",
             ),
+            # ---------------------------------------------------------------------------- #
         )
         self.setup_dialog = MDDialog(
-            # ----------------------------Icon-----------------------------
+            # ---------------------------------- Header ---------------------------------- #
             MDDialogIcon(
                 icon="cog",
             ),
-            # -----------------------Headline text-------------------------
             MDDialogHeadlineText(
                 text="Setup new time-control",
             ),
-            # -----------------------Supporting text-----------------------
             MDDialogSupportingText(
                 text="CAUTION: accepting will reset the clock!",
             ),
-            # -----------------------Custom content------------------------
+            # ------------------------------- Input fields ------------------------------- #
             MDDialogContentContainer(
                 MDTextField(
                     MDTextFieldLeadingIcon(
@@ -235,7 +234,7 @@ class MCCApp(MDApp):
                 padding="30dp",
                 id="setup_dialog_content",
             ),
-            # ---------------------Button container------------------------
+            # ----------------------------- Button container ----------------------------- #
             MDDialogButtonContainer(
                 Widget(),
                 MDButton(
@@ -250,7 +249,7 @@ class MCCApp(MDApp):
                 ),
                 spacing="8dp",
             ),
-            # -------------------------------------------------------------
+            # ---------------------------------------------------------------------------- #
         )
 
     def build(self):
@@ -260,6 +259,7 @@ class MCCApp(MDApp):
         # The root widget for the app
         self.root = MCCRootLayout(
             MCCClockLayout(
+                # -------------------------- Clock button for White -------------------------- #
                 MCCClockButton(
                     MCCTimeText(
                         id='mcc_time_text_white',
@@ -268,7 +268,9 @@ class MCCApp(MDApp):
                     on_press=self.on_press_clock_button,
                     id="mcc_clock_button_white",
                 ),
-                MCCControlButtonsLayout(
+                # --------------------- Container for the control buttons -------------------- #
+                MDFloatLayout(
+                    # ----------------------------- Play/Pause button ---------------------------- #
                     MDExtendedFabButton(
                         MDExtendedFabButtonIcon(
                             icon="play-pause"
@@ -280,6 +282,7 @@ class MCCApp(MDApp):
                         on_press=self.on_press_playpause_button,
                         id="mcc_play_pause_button",
                     ),
+                    # ------------------------------- Reset button ------------------------------- #
                     MDExtendedFabButton(
                         MDExtendedFabButtonIcon(
                             icon="refresh"
@@ -291,6 +294,7 @@ class MCCApp(MDApp):
                         on_press=self.on_press_reset_button,
                         id="mcc_reset_button",
                     ),
+                    # ------------------------------- Setup button ------------------------------- #
                     MDExtendedFabButton(
                         MDExtendedFabButtonIcon(
                             icon="cog"
@@ -306,6 +310,7 @@ class MCCApp(MDApp):
                     adaptive_width=True,
                     id="mcc_control_buttons_layout",
                 ),
+                # -------------------------- Clock button for Black -------------------------- #
                 MCCClockButton(
                     MCCTimeText(
                         id='mcc_time_text_black',
@@ -495,6 +500,9 @@ class MCCApp(MDApp):
     def on_stop(self):
         self.stop_clock()
 
+# ---------------------------------------------------------------------------- #
+#                                   Start app                                  #
+# ---------------------------------------------------------------------------- #
 
 if __name__ == '__main__':
     app = MCCApp()
