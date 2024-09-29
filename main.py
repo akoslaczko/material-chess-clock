@@ -267,7 +267,7 @@ class MCCApp(MDApp):
         Stop clock
         """
         self.running = False
-        # self.thread.join()
+        self.thread.join()
         self.update_control_buttons_disabled_state()
 
     def reset_clock(self):
