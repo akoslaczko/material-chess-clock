@@ -121,6 +121,18 @@ class MCCTimeText(MDExtendedFabButtonText):
                 self.color = self.theme_cls.primaryColor
 
 
+class MCCControlButtonsLayout(MDFloatLayout):
+    """
+    Control buttons layout
+    """
+    def adjust_width(self):
+        """
+        Dynamically adjust width based on max child widget size
+        """
+        child_widths = [child.width for child in self.children if hasattr(child, 'width')]
+        max_child_width = max(child_widths) if len(child_widths) > 0 else 0
+        self.width = max_child_width
+
 class MCCApp(MDApp):
     """
     The main app of material-chess-clock (MCC)
@@ -130,8 +142,11 @@ class MCCApp(MDApp):
         # State attributes
         self.running = False
         self.flagged = False
+        # Threading
+        self.thread = threading.Thread(target=self.refresh_time_text)
         # Sounds
-        self.button_click = SoundLoader.load('assets/clock-button-press.mp3')
+        self.clock_button_click = SoundLoader.load('assets/clock-button-press.mp3')
+        self.control_button_click = SoundLoader.load('assets/control-button-press.mp3')
         self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
         self.flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
         # Pointer attributes
@@ -152,6 +167,44 @@ class MCCApp(MDApp):
                     disabled=True,
                     on_press=self.on_press_clock_button,
                     id="mcc_clock_button_white",
+                ),
+                MCCControlButtonsLayout(
+                    MDExtendedFabButton(
+                        MDExtendedFabButtonIcon(
+                            icon="play-pause"
+                        ),
+                        pos_hint={"center_x": .5, "center_y": .75},
+                        theme_elevation_level="Custom",
+                        elevation_level=3,
+                        disabled=False,
+                        on_press=self.on_press_playpause_button,
+                        id="mcc_play_pause_button",
+                    ),
+                    MDExtendedFabButton(
+                        MDExtendedFabButtonIcon(
+                            icon="refresh"
+                        ),
+                        pos_hint={"center_x": .5, "center_y": .5},
+                        theme_elevation_level="Custom",
+                        elevation_level=3,
+                        disabled=False,
+                        on_press=self.on_press_reset_button,
+                        id="mcc_reset_button",
+                    ),
+                    MDExtendedFabButton(
+                        MDExtendedFabButtonIcon(
+                            icon="cog"
+                        ),
+                        pos_hint={"center_x": .5, "center_y": .25},
+                        theme_elevation_level="Custom",
+                        elevation_level=3,
+                        disabled=False,
+                        on_press=self.on_press_setup_button,
+                        id="mcc_setup_button",
+                    ),
+                    theme_width="Custom",
+                    adaptive_width=True,
+                    id="mcc_control_buttons_layout",
                 ),
                 MCCClockButton(
                     MCCTimeText(
@@ -178,12 +231,6 @@ class MCCApp(MDApp):
             'time_text': self.root.get_ids().mcc_time_text_black,
         }
         return self.root
-    
-    def start_threading(self, *args):
-        """
-        Start threading (refreshing)
-        """
-        threading.Thread(target=self.refresh_time_text).start()
 
     def refresh_time_text(self):
         """
@@ -195,7 +242,7 @@ class MCCApp(MDApp):
                 if not side['button'].disabled:
                     side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
                     side['time_text'].refresh_text()
-                    Logger.info("MCCApp: time: %s", [side['time_text'].time, side['time_text'].text])
+                    Logger.info("MCCApp: time: %s", side['time_text'].text)
                     if side['time_text'].time == timedelta(seconds=10):
                         self.warning_sound.play()
                     if side['time_text'].time == timedelta(milliseconds=0):
@@ -211,15 +258,17 @@ class MCCApp(MDApp):
         Start clock
         """
         self.running = True
-        self.start_threading(1)
-        # self.control_buttons_layout.update_control_buttons_disabled_state()
+        self.thread = threading.Thread(target=self.refresh_time_text)
+        self.thread.start()
+        self.update_control_buttons_disabled_state()
 
     def stop_clock(self):
         """
         Stop clock
         """
         self.running = False
-        # self.control_buttons_layout.update_control_buttons_disabled_state()
+        # self.thread.join()
+        self.update_control_buttons_disabled_state()
 
     def reset_clock(self):
         """
@@ -237,7 +286,7 @@ class MCCApp(MDApp):
         On press method for clock buttons
         """
         if not self.flagged:
-            self.button_click.play()
+            self.clock_button_click.play()
             if not self.running:
                 self.start_clock()
             if len(args) > 0 and isinstance(args[0], MCCClockButton):
@@ -252,6 +301,44 @@ class MCCApp(MDApp):
                     self.black_side['time_text'].time += self.white_side['time_text'].increment
                     self.black_side['time_text'].refresh_text()
                     self.white_side['button'].disabled = False
+            Logger.info("ChessClockApp: Pressed clock button")
+
+    def on_press_playpause_button(self, *args):
+        """
+        On press method for Play/Pause button
+        """
+        if not self.flagged:
+            self.control_button_click.play()
+            if self.running:
+                self.stop_clock()
+            elif not self.running:
+                self.start_clock()
+        Logger.info("ChessClockApp: Pressed playpause button")
+
+    def on_press_reset_button(self, *args):
+        """
+        On press method for Reset button
+        """
+        self.control_button_click.play()
+        Logger.info("ChessClockApp: Pressed reset button")
+
+    def on_press_setup_button(self, *args):
+        """
+        On press method for Setup button
+        """
+        self.control_button_click.play()
+        Logger.info("ChessClockApp: Pressed setup button")
+
+    def update_control_buttons_disabled_state(self):
+        """
+        Update clock button's disabled state
+        """
+        if self.running:
+            self.root.get_ids().mcc_reset_button.disabled = True
+            self.root.get_ids().mcc_setup_button.disabled = True
+        elif not self.running:
+            self.root.get_ids().mcc_reset_button.disabled = False
+            self.root.get_ids().mcc_setup_button.disabled = False
 
     def on_stop(self):
         self.stop_clock()
