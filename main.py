@@ -105,7 +105,7 @@ class MCCTimeText(MDExtendedFabButtonText):
 
     def on_change_time(self, *args):
         """
-        Bound method for updating the 'text' attribute based on the 'time' attribute
+        Bound method for updating the 'text' and 'color' attributes based on the 'time' attributes
         """
         # Split timedelta string
         time_list = re.split("[:.]", str(self.time))
