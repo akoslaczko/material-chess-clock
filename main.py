@@ -59,11 +59,6 @@ class MCCClockLayout(MDBoxLayout):
     """
     The layout containing the widgets for the actual clock
     """
-    running = False
-    flagged = False
-    button_click = SoundLoader.load('assets/clock-button-press.mp3')
-    warning_sound = SoundLoader.load('assets/warning-sound.mp3')
-    flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
 
 
 class MCCClockButton(MDExtendedFabButton):
@@ -82,39 +77,77 @@ class MCCClockButton(MDExtendedFabButton):
         self.theme_elevation_level = "Custom"
         self.elevation_level = 5
 
-    # New attributes
-    time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-    increment = timedelta(seconds=DEFAULT_INCREMENT)
-
 
 class MCCTimeText(MDExtendedFabButtonText):
     """
     Widget representing the remaining time of the players
     """
     def __init__(self, *args, **kwargs):
+        # New attributes
+        self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.increment = timedelta(seconds=DEFAULT_INCREMENT)
         super().__init__(*args, **kwargs)
-        # Visual attributes
+        self.refresh_text()
+        # Setting existing visual attributes
         self.theme_font_size = "Custom"
         self.font_size = 80
+
+    def refresh_text(self):
+        """
+        Method for updating the 'text' attribute based on the 'time' attribute
+        @property way currently doesn't work
+        """
+        # Split timedelta string
+        time_list = re.split("[:.]", str(self.time))
+        time_text = ""
+        # Adding hours if necessary
+        if int(time_list[0]) > 0:
+            time_text += time_list[0] + ":"
+        # Adding minutes and seconds
+        time_text += time_list[1] + ":" + time_list[2]
+        # Under 10 sec we increase the resolution
+        if self.time < timedelta(seconds=10):
+            time_text += "."
+            if len(time_list) >= 4:
+                time_text += time_list[3][0]
+            else:
+                time_text += "0"
+        self.text = time_text
 
 
 class MCCApp(MDApp):
     """
     The main app of material-chess-clock (MCC)
     """
-    def build(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         # Theming
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
-        # App root widget
+        # State attributes
+        self.running = False
+        self.flagged = False
+        # Sounds
+        self.button_click = SoundLoader.load('assets/clock-button-press.mp3')
+        self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
+        self.flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
+        # The root widget for the app
         self.root = MCCRootLayout(
             MCCClockLayout(
                 MCCClockButton(
+                    MCCTimeText(
+                        id='mcc_time_text_white',
+                    ),
                     disabled=True,
+                    on_press=self.on_press_clock_button,
                     id="mcc_clock_button_white",
                 ),
                 MCCClockButton(
+                    MCCTimeText(
+                        id='mcc_time_text_black',
+                    ),
                     disabled=False,
+                    on_press=self.on_press_clock_button,
                     id="mcc_clock_button_black",
                 ),
                 orientation="horizontal",
@@ -123,13 +156,96 @@ class MCCApp(MDApp):
                 id="mcc_clock_layout",
             ),
             md_bg_color=self.theme_cls.inversePrimaryColor,
-            orientation="vertical", #TODO: Do we need this?
             id="mcc_root_layout",
         )
+        self.white_side = {
+                'button': self.root.get_ids().mcc_clock_button_white,
+                'time_text': self.root.get_ids().mcc_time_text_white,
+            }
+        self.black_side = {
+            'button': self.root.get_ids().mcc_clock_button_black,
+            'time_text': self.root.get_ids().mcc_time_text_black,
+        }
+
+    def build(self):
         return self.root
+    
+    def start_threading(self, *args):
+        """
+        Start threading (refreshing)
+        """
+        threading.Thread(target=self.refresh_time_text).start()
+
+    def refresh_time_text(self):
+        """
+        Refresh active player time
+        """
+        while self.running:
+            refresh_start = time.time()
+            for side in (self.white_side, self.black_side):
+                if not side['button'].disabled:
+                    side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
+                    side['time_text'].refresh_text()
+                    Logger.info("MCCApp: time: %s", [side['time_text'].time, side['time_text'].text])
+                    if side['time_text'].time == timedelta(seconds=10):
+                        self.warning_sound.play()
+                    if side['time_text'].time == timedelta(milliseconds=0):
+                        self.stop_clock()
+                        self.flagging_sound.play()
+                        self.flagged = True
+                        side['button'].disabled = True
+            refresh_duration = time.time() - refresh_start
+            time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
+
+    def start_clock(self):
+        """
+        Start clock
+        """
+        self.running = True
+        self.start_threading(1)
+        # self.control_buttons_layout.update_control_buttons_disabled_state()
+
+    def stop_clock(self):
+        """
+        Stop clock
+        """
+        self.running = False
+        # self.control_buttons_layout.update_control_buttons_disabled_state()
+
+    def reset_clock(self):
+        """
+        Reset clock
+        """
+        self.stop_clock()  # Should be already stopped, but just in case
+        self.flagged = False
+        self.white_side['button'].disabled = True
+        self.black_side['button'].disabled = False
+        self.white_side['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.black_side['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+
+    def on_press_clock_button(self, *args):
+        """
+        On press method for clock buttons
+        """
+        if not self.flagged:
+            self.button_click.play()
+            if not self.running:
+                self.start_clock()
+            if len(args) > 0 and isinstance(args[0], MCCClockButton):
+                button = args[0]
+                if button == self.white_side['button']:
+                    self.white_side['button'].disabled = True
+                    self.white_side['time_text'].time += self.white_side['time_text'].increment
+                    self.white_side['time_text'].refresh_text()
+                    self.black_side['button'].disabled = False
+                elif button == self.black_side['button']:
+                    self.black_side['button'].disabled = True
+                    self.black_side['time_text'].time += self.white_side['time_text'].increment
+                    self.black_side['time_text'].refresh_text()
+                    self.white_side['button'].disabled = False
 
     def on_stop(self):
-        self.root.clock_layout.stop_clock()
+        self.stop_clock()
 
 
 if __name__ == '__main__':
