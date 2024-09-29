@@ -113,6 +113,12 @@ class MCCTimeText(MDExtendedFabButtonText):
             else:
                 time_text += "0"
         self.text = time_text
+        if not self.disabled:
+            # If the clock button is not disabled we also change the text color under 10 sec
+            if self.time < timedelta(seconds=10):
+                self.color = self.theme_cls.errorColor
+            elif self.time >= timedelta(seconds=10):
+                self.color = self.theme_cls.primaryColor
 
 
 class MCCApp(MDApp):
@@ -121,9 +127,6 @@ class MCCApp(MDApp):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Theming
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Green"
         # State attributes
         self.running = False
         self.flagged = False
@@ -131,6 +134,14 @@ class MCCApp(MDApp):
         self.button_click = SoundLoader.load('assets/clock-button-press.mp3')
         self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
         self.flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
+        # Pointer attributes
+        self.white_side = {}
+        self.black_side = {}
+
+    def build(self):
+        # Theming
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Green"
         # The root widget for the app
         self.root = MCCRootLayout(
             MCCClockLayout(
@@ -159,15 +170,13 @@ class MCCApp(MDApp):
             id="mcc_root_layout",
         )
         self.white_side = {
-                'button': self.root.get_ids().mcc_clock_button_white,
-                'time_text': self.root.get_ids().mcc_time_text_white,
+            'button': self.root.get_ids().mcc_clock_button_white,
+            'time_text': self.root.get_ids().mcc_time_text_white,
             }
         self.black_side = {
             'button': self.root.get_ids().mcc_clock_button_black,
             'time_text': self.root.get_ids().mcc_time_text_black,
         }
-
-    def build(self):
         return self.root
     
     def start_threading(self, *args):
