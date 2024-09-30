@@ -164,7 +164,7 @@ class MCCApp(MDApp):
         # Dialogs
         self.reset_dialog = MDDialog()
         self.setup_dialog = MDDialog()
-  
+
     def build(self):
         # Theming
         self.theme_cls.theme_style = "Dark"
@@ -353,7 +353,7 @@ class MCCApp(MDApp):
         # Adjust the width of the container of clock control buttons
         self.root.get_ids().mcc_control_buttons_layout.adjust_width()
         return self.root
-    
+
     def get_white_side(self):
         """
         Getter method that returns the widgets belonging to White
