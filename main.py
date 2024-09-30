@@ -135,6 +135,7 @@ class MCCControlButtonsLayout(MDFloatLayout):
     def adjust_width(self):
         """
         Dynamically adjust width based on max child widget size
+        (It's too wide otherwise)
         """
         child_widths = [child.width for child in self.children if hasattr(child, 'width')]
         max_child_width = max(child_widths) if len(child_widths) > 0 else 0
