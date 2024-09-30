@@ -7,7 +7,6 @@ Material Design style chess clock app using KivyMD
 import threading
 import time
 from datetime import timedelta
-from enum import Enum
 
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
