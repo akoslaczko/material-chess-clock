@@ -383,8 +383,6 @@ class MCCApp(MDApp):
                 active_side = self.get_white_side()
             elif self.active_player == 'black':
                 active_side = self.get_black_side()
-            else:
-                break
             # Refresh player time
             active_side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
             # Play warning sound if under critical time
