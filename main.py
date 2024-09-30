@@ -515,10 +515,12 @@ class MCCApp(MDApp):
         """
         On press method for setup dialog accept button
         """
+        Logger.info("MCCApp: Pressed setup dialog 'Accept' button")
         # Converting starting time and increment inputs
-        starting_time = helpers.convert_time_string_to_integer(self.setup_dialog.get_ids().starting_time.text)
-        increment = helpers.convert_time_string_to_integer(self.setup_dialog.get_ids().increment.text)
-        Logger.info("MCCApp: Pressed setup dialog 'Accept' button, 'starting_time' and 'increment': %s", [starting_time, increment])
+        starting_time_text = self.setup_dialog.get_ids().starting_time.text
+        increment_text = self.setup_dialog.get_ids().increment.text
+        starting_time = helpers.convert_time_string_to_integer(starting_time_text)
+        increment = helpers.convert_time_string_to_integer(increment_text)
         # Updating default variables
         global DEFAULT_CLOCK_TIME
         DEFAULT_CLOCK_TIME = starting_time
