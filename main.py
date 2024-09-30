@@ -7,7 +7,7 @@ Material Design style chess clock app using KivyMD
 import threading
 import time
 from datetime import timedelta
-import copy
+from enum import Enum
 
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
@@ -59,6 +59,14 @@ DEFAULT_INCREMENT = 5  # in seconds
 # ---------------------------------------------------------------------------- #
 #                                Custom classes                                #
 # ---------------------------------------------------------------------------- #
+
+class MCCPlayer(Enum):
+    """
+    Custom class that defines the possible values of the root widget's 'active_player' attribute
+    """
+    WHITE = 'white'
+    BLACK = 'black'
+
 
 class MCCRootLayout(MDBoxLayout, DeclarativeBehavior):
     """
@@ -147,8 +155,9 @@ class MCCApp(MDApp):
         # State attributes
         self.running = False
         self.flagged = False
+        self.active_player = MCCPlayer.BLACK
         # Threading
-        self.thread = threading.Thread(target=self.refresh_time_text)
+        self.thread = threading.Thread(target=self.refresh_active_players_time)
         # Sounds
         self.clock_button_click = SoundLoader.load('assets/clock-button-press.mp3')
         self.control_button_click = SoundLoader.load('assets/control-button-press.mp3')
@@ -365,22 +374,31 @@ class MCCApp(MDApp):
             'time_text': self.root.get_ids().mcc_time_text_black,
         }
 
-    def refresh_time_text(self):
+    def refresh_active_players_time(self):
         """
         Refresh active player time
         """
         while self.running:
             refresh_start = time.time()
-            for side in (self.get_white_side(), self.get_black_side()):
-                if not side['button'].disabled:
-                    side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
-                    if side['time_text'].time == timedelta(seconds=10):
-                        self.warning_sound.play()
-                    if side['time_text'].time == timedelta(milliseconds=0):
-                        self.stop_clock()
-                        self.flagged = True
-                        self.flagging_sound.play()
-                        break
+            # Get the active player's widgets
+            if self.active_player.value == 'white':
+                active_side = self.get_white_side()
+            elif self.active_player.value == 'black':
+                active_side = self.get_black_side()
+            else:
+                break
+            # Refresh player time
+            active_side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
+            # Play warning sound if under critical time
+            if active_side['time_text'].time == timedelta(seconds=10):
+                self.warning_sound.play()
+            # Flagging
+            if active_side['time_text'].time == timedelta(milliseconds=0):
+                self.stop_clock()
+                self.flagged = True
+                self.flagging_sound.play()
+                break
+            # Sleep
             refresh_duration = time.time() - refresh_start
             time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
 
@@ -389,7 +407,7 @@ class MCCApp(MDApp):
         Start clock
         """
         self.running = True
-        self.thread = threading.Thread(target=self.refresh_time_text)
+        self.thread = threading.Thread(target=self.refresh_active_players_time)
         self.thread.start()
         self.update_control_buttons_disabled_state()
 
@@ -438,10 +456,12 @@ class MCCApp(MDApp):
                     self.get_white_side()['button'].disabled = True
                     self.get_white_side()['time_text'].time += self.get_white_side()['time_text'].increment
                     self.get_black_side()['button'].disabled = False
+                    self.active_player = MCCPlayer.BLACK
                 elif button == self.get_black_side()['button']:
                     self.get_black_side()['button'].disabled = True
-                    self.get_black_side()['time_text'].time += self.get_white_side()['time_text'].increment
+                    self.get_black_side()['time_text'].time += self.get_black_side()['time_text'].increment
                     self.get_white_side()['button'].disabled = False
+                    self.active_player = MCCPlayer.WHITE
             Logger.info("MCCApp: Pressed clock button")
 
     def on_press_playpause_button(self, *args):
