@@ -112,7 +112,7 @@ class MCCTimeText(MDExtendedFabButtonText):
 
     def on_change_time(self, *args):
         """
-        Bound method for updating the 'text' and 'color' attributes based on the 'time' attributes
+        Bound method for updating the 'text' and 'color' attributes based on the 'time' attribute
         """
         self.text = helpers.convert_timedelta_to_clock_time_string(self.time)
         if not self.disabled:
