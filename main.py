@@ -53,7 +53,7 @@ Window.size = [1200, 600]
 # ---------------------------------------------------------------------------- #
 
 REFRESH_TIME = 0.1 # in seconds
-DEFAULT_CLOCK_TIME = 0.1  # in minutes
+DEFAULT_CLOCK_TIME = 0.2  # in minutes
 DEFAULT_INCREMENT = 5  # in seconds
 
 # ---------------------------------------------------------------------------- #
