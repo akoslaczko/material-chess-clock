@@ -79,9 +79,7 @@ class MCCClockButton(MDExtendedFabButton):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Setting existing visual attributes
-        self.theme_width = "Custom"
-        self.theme_height = "Custom"
+        # Setting existing visual attributes"
         self.size_hint = (1, 1)
         self.pos_hint = {"center_x": .5, "center_y": .5}
         self.halign = "center"
@@ -103,6 +101,7 @@ class MCCTimeText(MDExtendedFabButtonText):
         # Setting existing visual attributes
         self.theme_font_size = "Custom"
         self.font_size = 80
+        self.size_hint = (1, 1) # Fixes bug related to buttons being clickable while disabled
         # Setup clock time related attributes
         self.bind(time=self.on_change_time)
         self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
