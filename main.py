@@ -13,7 +13,10 @@ from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
 from kivy.logger import Logger
-from kivy.properties import ObjectProperty
+from kivy.properties import (
+    ObjectProperty,
+    OptionProperty,
+)
 
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import DeclarativeBehavior
@@ -59,13 +62,6 @@ DEFAULT_INCREMENT = 5  # in seconds
 # ---------------------------------------------------------------------------- #
 #                                Custom classes                                #
 # ---------------------------------------------------------------------------- #
-
-class MCCPlayer(Enum):
-    """
-    Custom class that defines the possible values of the root widget's 'active_player' attribute
-    """
-    WHITE = 'white'
-    BLACK = 'black'
 
 
 class MCCRootLayout(MDBoxLayout, DeclarativeBehavior):
@@ -151,12 +147,14 @@ class MCCApp(MDApp):
     """
     The main app of material-chess-clock (MCC)
     """
+    # Define new option property for keeping track of who is the active side
+    active_player = OptionProperty("black", options=["white", "black"])
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # State attributes
         self.running = False
         self.flagged = False
-        self.active_player = MCCPlayer.BLACK
         # Threading
         self.thread = threading.Thread(target=self.refresh_active_players_time)
         # Sounds
@@ -382,9 +380,9 @@ class MCCApp(MDApp):
         while self.running:
             refresh_start = time.time()
             # Get the active player's widgets
-            if self.active_player.value == 'white':
+            if self.active_player == 'white':
                 active_side = self.get_white_side()
-            elif self.active_player.value == 'black':
+            elif self.active_player == 'black':
                 active_side = self.get_black_side()
             else:
                 break
@@ -438,6 +436,7 @@ class MCCApp(MDApp):
         if self.running:
             self.stop_clock()
         self.flagged = False
+        self.active_player = 'black'
         self.get_white_side()['button'].disabled = True
         self.get_black_side()['button'].disabled = False
         self.get_white_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
@@ -457,12 +456,12 @@ class MCCApp(MDApp):
                     self.get_white_side()['button'].disabled = True
                     self.get_white_side()['time_text'].time += self.get_white_side()['time_text'].increment
                     self.get_black_side()['button'].disabled = False
-                    self.active_player = MCCPlayer.BLACK
+                    self.active_player = "black"
                 elif button == self.get_black_side()['button']:
                     self.get_black_side()['button'].disabled = True
                     self.get_black_side()['time_text'].time += self.get_black_side()['time_text'].increment
                     self.get_white_side()['button'].disabled = False
-                    self.active_player = MCCPlayer.WHITE
+                    self.active_player = "white"
             Logger.info("MCCApp: Pressed clock button")
 
     def on_press_playpause_button(self, *args):
