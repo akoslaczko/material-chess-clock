@@ -7,6 +7,7 @@ Material Design style chess clock app using KivyMD
 import threading
 import time
 from datetime import timedelta
+import copy
 
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
@@ -52,7 +53,7 @@ Window.size = [1200, 600]
 # ---------------------------------------------------------------------------- #
 
 REFRESH_TIME = 0.1 # in seconds
-DEFAULT_CLOCK_TIME = 0.2  # in minutes
+DEFAULT_CLOCK_TIME = 0.1  # in minutes
 DEFAULT_INCREMENT = 5  # in seconds
 
 # ---------------------------------------------------------------------------- #
@@ -378,9 +379,9 @@ class MCCApp(MDApp):
                         self.warning_sound.play()
                     if side['time_text'].time == timedelta(milliseconds=0):
                         self.stop_clock()
-                        self.flagging_sound.play()
                         self.flagged = True
-                        side['button'].disabled = True
+                        self.flagging_sound.play()
+                        break
             refresh_duration = time.time() - refresh_start
             time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
 
