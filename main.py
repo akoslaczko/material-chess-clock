@@ -21,6 +21,7 @@ from kivymd.app import MDApp
 from kivymd.uix.behaviors import DeclarativeBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
+from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.button import (
     MDButton,
     MDButtonText,
@@ -43,7 +44,6 @@ from kivymd.uix.textfield import (
     MDTextFieldHelperText,
     MDTextFieldMaxLengthText,
 )
-
 import helpers
 
 
@@ -288,47 +288,59 @@ class MCCApp(MDApp):
             ),
             # ------------------------------- Input fields ------------------------------- #
             MDDialogContentContainer(
-                # ------------------------------- Starting time ------------------------------ #
-                MDTextField(
-                    MDTextFieldLeadingIcon(
-                        icon="clock",
+                MDScrollView(
+                    MDBoxLayout(
+                        # ------------------------------- Starting time ------------------------------ #
+                        MDTextField(
+                            MDTextFieldLeadingIcon(
+                                icon="clock",
+                            ),
+                            MDTextFieldHintText(
+                                text="Starting time",
+                            ),
+                            MDTextFieldHelperText(
+                                text="In the format of 'hh:mm'",
+                                mode="persistent",
+                            ),
+                            MDTextFieldMaxLengthText(
+                                max_text_length=5,
+                            ),
+                            mode="outlined",
+                            validator="time",
+                            text="00:01",
+                            id="starting_time",
+                        ),
+                        # --------------------------------- Increment -------------------------------- #
+                        MDTextField(
+                            MDTextFieldLeadingIcon(
+                                icon="plus",
+                            ),
+                            MDTextFieldHintText(
+                                text="Increment",
+                            ),
+                            MDTextFieldHelperText(
+                                text="In the format of 'mm:ss'",
+                                mode="persistent",
+                            ),
+                            MDTextFieldMaxLengthText(
+                                max_text_length=5,
+                            ),
+                            mode="outlined",
+                            validator="time",
+                            text="00:05",
+                            id="increment",
+                        ),
+                        adaptive_height=True,
+                        orientation='vertical',
+                        spacing="30dp",
+                        padding="30dp",
+                        id="setup_dialog_content_layout",
                     ),
-                    MDTextFieldHintText(
-                        text="Starting time",
-                    ),
-                    MDTextFieldHelperText(
-                        text="In the format of 'hh:mm'",
-                        mode="persistent",
-                    ),
-                    MDTextFieldMaxLengthText(
-                        max_text_length=5,
-                    ),
-                    mode="outlined",
-                    validator="time",
-                    text="00:01",
-                    id="starting_time",
+                    size_hint_y=None,
+                    height=100,
+                    id="setup_dialog_content_scrollview",
                 ),
-                # --------------------------------- Increment -------------------------------- #
-                MDTextField(
-                    MDTextFieldLeadingIcon(
-                        icon="plus",
-                    ),
-                    MDTextFieldHintText(
-                        text="Increment",
-                    ),
-                    MDTextFieldHelperText(
-                        text="In the format of 'mm:ss'",
-                        mode="persistent",
-                    ),
-                    MDTextFieldMaxLengthText(
-                        max_text_length=5,
-                    ),
-                    mode="outlined",
-                    validator="time",
-                    text="00:05",
-                    id="increment",
-                ),
-                orientation="horizontal",
+                orientation="vertical",
                 spacing="30dp",
                 padding="30dp",
                 id="setup_dialog_content",
