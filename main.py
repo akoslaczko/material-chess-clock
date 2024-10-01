@@ -239,7 +239,7 @@ class MCCApp(MDApp):
                 spacing="15dp",
                 id="mcc_clock_layout",
             ),
-            md_bg_color=self.theme_cls.inversePrimaryColor,
+            md_bg_color=self.theme_cls.primaryContainerColor,
             id="mcc_root_layout",
         )
         # ---------------------------------------------------------------------------- #
