@@ -337,12 +337,10 @@ class MCCApp(MDApp):
                         id="setup_dialog_content_layout",
                     ),
                     size_hint_y=None,
-                    height=100,
+                    # height=100,
                     id="setup_dialog_content_scrollview",
                 ),
                 orientation="vertical",
-                spacing="30dp",
-                padding="30dp",
                 id="setup_dialog_content",
             ),
             # ----------------------------- Button container ----------------------------- #
