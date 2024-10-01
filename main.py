@@ -328,7 +328,7 @@ class MCCApp(MDApp):
                     text="00:05",
                     id="increment",
                 ),
-                orientation="vertical",
+                orientation="horizontal",
                 spacing="30dp",
                 padding="30dp",
                 id="setup_dialog_content",
