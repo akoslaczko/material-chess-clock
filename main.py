@@ -103,7 +103,7 @@ class MCCTimeText(MDExtendedFabButtonText):
         super().__init__(*args, **kwargs)
         # Setting existing visual attributes
         self.theme_font_size = "Custom"
-        self.font_size = 80
+        self.font_size = 180
         self.size_hint = (1, 1) # Fixes bug related to buttons being clickable while disabled
         # Setup clock time related attributes
         self.bind(time=self.on_change_time)
