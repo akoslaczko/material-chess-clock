@@ -48,7 +48,7 @@ import helpers
 
 
 # Window for testing
-Window.size = [1200, 600]
+# Window.size = [1200, 600]
 
 # ---------------------------------------------------------------------------- #
 #                               Default variables                              #
