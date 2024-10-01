@@ -4,10 +4,10 @@
 title = Material Chess Clock
 
 # (str) Package name
-package.name = material-chess-clock
+package.name = materialchessclock
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.material-chess-clock
+package.domain = org.akoslaczko
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -22,7 +22,7 @@ source.include_exts = py,png,jpg,kv,mp3
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-#source.exclude_dirs = tests, bin, venv
+source.exclude_dirs = tests, bin, venv, venv-v2
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
