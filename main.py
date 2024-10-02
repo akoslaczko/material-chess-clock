@@ -57,8 +57,6 @@ import helpers
 # ---------------------------------------------------------------------------- #
 
 REFRESH_TIME = 0.1 # in seconds
-DEFAULT_CLOCK_TIME = 0.2  # in minutes
-DEFAULT_INCREMENT = 5  # in seconds
 
 # ---------------------------------------------------------------------------- #
 #                                Custom classes                                #
@@ -109,8 +107,8 @@ class MCCTimeText(MDExtendedFabButtonText):
         self.size_hint = (1, 1) # Fixes bug related to buttons being clickable while disabled
         # Setup clock time related attributes
         self.bind(time=self.on_change_time)
-        self.time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-        self.increment = timedelta(seconds=DEFAULT_INCREMENT)
+        self.time = timedelta(minutes=app.starting_time)
+        self.increment = timedelta(seconds=app.increment)
 
     def on_change_time(self, *args):
         """
@@ -255,10 +253,8 @@ class MCCQuickSetupButton(MDButton):
         """
         Logger.info("MCCApp: Pressed quick setup dialog option with 'id': %s", self.id)
         # Updating default variables
-        global DEFAULT_CLOCK_TIME
-        DEFAULT_CLOCK_TIME = self.starting_time
-        global DEFAULT_INCREMENT
-        DEFAULT_INCREMENT = self.increment
+        app.starting_time = self.starting_time
+        app.increment = self.increment
         # Restart clock to apply effects
         app.reset_clock()
         app.quicksetup_dialog.dismiss()
@@ -275,6 +271,8 @@ class MCCApp(MDApp):
     """
     # Define new option property for keeping track of who is the active side
     active_player = OptionProperty("black", options=["white", "black"])
+    starting_time = NumericProperty(0.2)  # in minutes
+    increment = NumericProperty(5)  # in seconds
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -600,8 +598,8 @@ class MCCApp(MDApp):
         self.active_player = 'black'
         self.get_white_side()['button'].disabled = True
         self.get_black_side()['button'].disabled = False
-        self.get_white_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
-        self.get_black_side()['time_text'].time = timedelta(minutes=DEFAULT_CLOCK_TIME)
+        self.get_white_side()['time_text'].time = timedelta(minutes=self.starting_time)
+        self.get_black_side()['time_text'].time = timedelta(minutes=self.starting_time)
 
     def on_press_clock_button(self, *args):
         """
@@ -687,10 +685,8 @@ class MCCApp(MDApp):
         starting_time = helpers.convert_time_string_to_integer(starting_time_text)
         increment = helpers.convert_time_string_to_integer(increment_text)
         # Updating default variables
-        global DEFAULT_CLOCK_TIME
-        DEFAULT_CLOCK_TIME = starting_time
-        global DEFAULT_INCREMENT
-        DEFAULT_INCREMENT = increment
+        self.starting_time = starting_time
+        self.increment = increment
         # Restart clock to apply effects
         self.reset_clock()
         self.setup_dialog.dismiss()
