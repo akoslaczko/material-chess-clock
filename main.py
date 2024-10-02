@@ -240,7 +240,6 @@ class MCCQuickSetupLayout(MDGridLayout):
                 # ID
                 id="quicksetup_button_" + str(i),
             )
-            # timecontrol_button = MDButton()
             self.add_widget(timecontrol_button)
 
 
