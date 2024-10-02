@@ -127,7 +127,11 @@ class MCCControlButtonsLayout(MDFloatLayout):
     """
     Container widget for the clock control buttons (eg Play/Pause, Reset, etc...)
     """
-    def adjust_width(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.minimize_width()
+
+    def minimize_width(self):
         """
         Dynamically adjust width based on max child widget size
         (It's too wide otherwise)
@@ -512,8 +516,6 @@ class MCCApp(MDApp):
                 id="quicksetup_dialog_content",
             ),
         )
-        # Adjust the width of the container of clock control buttons
-        self.root.get_ids().mcc_control_buttons_layout.adjust_width()
         return self.root
 
     def get_white_side(self):
