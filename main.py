@@ -143,7 +143,7 @@ class MCCControlButtonsLayout(MDFloatLayout):
         self.width = max_child_width
 
 
-class MCCQuickSetupLayout(MDGridLayout):
+class MCCQuickSetupLayout(MDBoxLayout):
     """
     Container for various quick setup options
     """
@@ -225,23 +225,24 @@ class MCCQuickSetupLayout(MDGridLayout):
         Method for adding button widgets that represent the different timecontrol options
         """
         for i, option in enumerate(self.timecontrol_options):
-            timecontrol_button = MCCQuickSetupButton(
-                MDButtonText(
-                    text=option["time_text"] + "\n" + option["type_text"],
-                    pos_hint={"center_x": .5, "center_y": .5},
-                    font_style="Title",
-                ),
-                style="outlined",
-                theme_width="Custom",
-                theme_height="Custom",
-                size_hint_x=1,
-                size_hint_y=1,
-                # Setting the actual time-control variables
-                starting_time = option["starting_time"],
-                increment = option["increment"],
-                # ID
-                id="quicksetup_button_" + str(i),
-            )
+            # timecontrol_button = MCCQuickSetupButton(
+            #     MDButtonText(
+            #         text=option["time_text"] + "\n" + option["type_text"],
+            #         pos_hint={"center_x": .5, "center_y": .5},
+            #         font_style="Title",
+            #     ),
+            #     style="outlined",
+            #     theme_width="Custom",
+            #     theme_height="Custom",
+            #     size_hint_x=1,
+            #     size_hint_y=1,
+            #     # Setting the actual time-control variables
+            #     starting_time = option["starting_time"],
+            #     increment = option["increment"],
+            #     # ID
+            #     id="quicksetup_button_" + str(i),
+            # )
+            timecontrol_button = MDButton()
             self.add_widget(timecontrol_button)
 
 
@@ -503,15 +504,36 @@ class MCCApp(MDApp):
                 text="Quick Setup Time-control",
             ),
             # ------------------------------- Input fields ------------------------------- #
+            # MDDialogContentContainer(
+            #     MDScrollView(
+            #         MCCQuickSetupLayout(
+            #             adaptive_height=True,
+            #             orientation='vertical',
+            #             spacing="30dp",
+            #             padding="30dp",
+            #             id="quicksetup_dialog_content_layout",
+            #         ),
+            #         size_hint_y=None,
+            #         height=300,
+            #         id="quicksetup_dialog_content_scrollview",
+            #     ),
+            #     orientation="vertical",
+            #     id="quicksetup_dialog_content",
+            # ),
             MDDialogContentContainer(
-                MCCQuickSetupLayout(
-                    # adaptive_height=True,
+                MDScrollView(
+                    MCCQuickSetupLayout(
+                        adaptive_width=True,
+                        orientation='horizontal',
+                        spacing="30dp",
+                        padding="30dp",
+                        id="quicksetup_dialog_content_layout",
+                    ),
+                    size_hint_x=None,
+                    size_hint_y=1,
                     height=300,
-                    size_hint_y=None,
-                    cols=4,
-                    spacing="10dp",
-                    padding="10dp",
-                    id="quicksetup_dialog_content_layout",
+                    do_scroll_y=True,
+                    id="quicksetup_dialog_content_scrollview",
                 ),
                 orientation="vertical",
                 id="quicksetup_dialog_content",
