@@ -15,12 +15,14 @@ from kivy.logger import Logger
 from kivy.properties import (
     ObjectProperty,
     OptionProperty,
+    NumericProperty,
 )
 
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import DeclarativeBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
+from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.button import (
     MDButton,
@@ -137,6 +139,131 @@ class MCCControlButtonsLayout(MDFloatLayout):
         self.width = max_child_width
 
 
+class MCCQuickSetupLayout(MDGridLayout):
+    """
+    Container for various quick setup options
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.timecontrol_options = [
+            {
+                'time_text': '1 + 0',
+                'type_text': 'Bullet',
+                'starting_time': 1,
+                'increment': 0,
+            },
+            {
+                'time_text': '2 + 1',
+                'type_text': 'Bullet',
+                'starting_time': 2,
+                'increment': 1,
+            },
+            {
+                'time_text': '3 + 0',
+                'type_text': 'Blitz',
+                'starting_time': 3,
+                'increment': 0,
+            },
+            {
+                'time_text': '3 + 2',
+                'type_text': 'Blitz',
+                'starting_time': 3,
+                'increment': 2,
+            },
+            {
+                'time_text': '5 + 0',
+                'type_text': 'Blitz',
+                'starting_time': 5,
+                'increment': 0,
+            },
+            {
+                'time_text': '5 + 3',
+                'type_text': 'Blitz',
+                'starting_time': 5,
+                'increment': 3,
+            },
+            {
+                'time_text': '10 + 0',
+                'type_text': 'Rapid',
+                'starting_time': 10,
+                'increment': 0,
+            },
+            {
+                'time_text': '10 + 5',
+                'type_text': 'Rapid',
+                'starting_time': 10,
+                'increment': 5,
+            },
+            {
+                'time_text': '15 + 10',
+                'type_text': 'Rapid',
+                'starting_time': 15,
+                'increment': 10,
+            },
+            {
+                'time_text': '30 + 0',
+                'type_text': 'Classical',
+                'starting_time': 30,
+                'increment': 0,
+            },
+            {
+                'time_text': '30 + 20',
+                'type_text': 'Classical',
+                'starting_time': 30,
+                'increment': 20,
+            },
+        ]
+        self.add_timecontrol_options()
+
+    def add_timecontrol_options(self):
+        """
+        Method for adding button widgets that represent the different timecontrol options
+        """
+        for i, option in enumerate(self.timecontrol_options):
+            timecontrol_button = MCCQuickSetupButton(
+                MDButtonText(
+                    text=option["time_text"] + "\n" + option["type_text"],
+                    pos_hint={"center_x": .5, "center_y": .5},
+                    font_style="Title",
+                ),
+                style="outlined",
+                theme_width="Custom",
+                theme_height="Custom",
+                size_hint_x=1,
+                size_hint_y=1,
+                # Setting the actual time-control variables
+                starting_time = option["starting_time"],
+                increment = option["increment"],
+                # ID
+                id="quicksetup_button_" + str(i),
+            )
+            # timecontrol_button = MDButton()
+            self.add_widget(timecontrol_button)
+
+
+class MCCQuickSetupButton(MDButton):
+    """
+    Class for buttons that represent the Quick Setup options
+    """
+    starting_time = NumericProperty()
+    increment = NumericProperty()
+
+    def on_release(self, *args):
+        """
+        On press method for setup dialog accept button
+        """
+        Logger.info("MCCApp: Pressed quick setup dialog option with 'id': %s", self.id)
+        # Updating default variables
+        global DEFAULT_CLOCK_TIME
+        DEFAULT_CLOCK_TIME = self.starting_time
+        global DEFAULT_INCREMENT
+        DEFAULT_INCREMENT = self.increment
+        # Restart clock to apply effects
+        app.reset_clock()
+        app.quicksetup_dialog.dismiss()
+
+
 # ---------------------------------------------------------------------------- #
 #                             The main application                             #
 # ---------------------------------------------------------------------------- #
@@ -164,6 +291,7 @@ class MCCApp(MDApp):
         # Dialogs
         self.reset_dialog = MDDialog()
         self.setup_dialog = MDDialog()
+        self.quicksetup_dialog = MDDialog()
 
     def build(self):
         # Theming
@@ -360,6 +488,32 @@ class MCCApp(MDApp):
             ),
             # ---------------------------------------------------------------------------- #
         )
+        # ---------------------------------------------------------------------------- #
+        #                              Quick setup dialog                              #
+        # ---------------------------------------------------------------------------- #
+        self.quicksetup_dialog = MDDialog(
+            # ---------------------------------- Header ---------------------------------- #
+            MDDialogIcon(
+                icon="cog",
+            ),
+            MDDialogHeadlineText(
+                text="Quick Setup Time-control",
+            ),
+            # ------------------------------- Input fields ------------------------------- #
+            MDDialogContentContainer(
+                MCCQuickSetupLayout(
+                    # adaptive_height=True,
+                    height=300,
+                    size_hint_y=None,
+                    cols=4,
+                    spacing="10dp",
+                    padding="10dp",
+                    id="quicksetup_dialog_content_layout",
+                ),
+                orientation="vertical",
+                id="quicksetup_dialog_content",
+            ),
+        )
         # Adjust the width of the container of clock control buttons
         self.root.get_ids().mcc_control_buttons_layout.adjust_width()
         return self.root
@@ -496,7 +650,8 @@ class MCCApp(MDApp):
         On press method for Setup button
         """
         self.control_button_click.play()
-        self.setup_dialog.open()
+        # self.setup_dialog.open()
+        self.quicksetup_dialog.open()
         Logger.info("MCCApp: Pressed setup button")
 
     def on_press_reset_dialog_cancel(self, *args):
@@ -547,6 +702,7 @@ class MCCApp(MDApp):
 #                                   Start app                                  #
 # ---------------------------------------------------------------------------- #
 
+app = MCCApp()
+
 if __name__ == '__main__':
-    app = MCCApp()
     app.run()
