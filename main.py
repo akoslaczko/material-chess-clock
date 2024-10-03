@@ -105,7 +105,7 @@ class MCCTimeText(MDExtendedFabButtonText):
         super().__init__(*args, **kwargs)
         # Setting existing visual attributes
         self.theme_font_size = "Custom"
-        self.font_size = dp(180)
+        self.font_size = dp(80)
         self.size_hint = (1, 1) # Fixes bug related to buttons being clickable while disabled
         # Setup clock time related attributes
         self.bind(time=self.on_change_time)
@@ -469,7 +469,7 @@ class MCCApp(MDApp):
                         id="setup_dialog_content_layout",
                     ),
                     size_hint_y=None,
-                    # height=100,
+                    # height=dp(100),
                     id="setup_dialog_content_scrollview",
                 ),
                 orientation="vertical",
