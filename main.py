@@ -512,8 +512,7 @@ class MCCApp(MDApp):
                         id="quicksetup_dialog_content_layout",
                     ),
                     size_hint_y=None,
-                    # height=dp(120),
-                    # Using metrics 'dp' here causes the apk to crash
+                    # height=dp(120), # Using explicite height value currently causes apk crash
                     id="quicksetup_dialog_content_scrollview",
                 ),
                 id="quicksetup_dialog_content",
