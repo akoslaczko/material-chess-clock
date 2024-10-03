@@ -463,7 +463,6 @@ class MCCApp(MDApp):
                             id="increment",
                         ),
                         adaptive_height=True,
-                        orientation='vertical',
                         spacing="30dp",
                         padding="30dp",
                         id="setup_dialog_content_layout",
@@ -472,7 +471,6 @@ class MCCApp(MDApp):
                     # height=dp(100),
                     id="setup_dialog_content_scrollview",
                 ),
-                orientation="vertical",
                 id="setup_dialog_content",
             ),
             # ----------------------------- Button container ----------------------------- #
@@ -508,7 +506,6 @@ class MCCApp(MDApp):
                 MDScrollView(
                     MCCQuickSetupLayout(
                         adaptive_width=True,
-                        orientation='horizontal',
                         spacing="10dp",
                         padding="10dp",
                         id="quicksetup_dialog_content_layout",
@@ -517,7 +514,6 @@ class MCCApp(MDApp):
                     height=dp(120),
                     id="quicksetup_dialog_content_scrollview",
                 ),
-                orientation="horizontal",
                 id="quicksetup_dialog_content",
             ),
         )
