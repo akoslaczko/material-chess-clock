@@ -23,7 +23,6 @@ from kivymd.app import MDApp
 from kivymd.uix.behaviors import DeclarativeBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.button import (
     MDButton,
