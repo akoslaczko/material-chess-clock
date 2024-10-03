@@ -146,68 +146,57 @@ class MCCQuickSetupLayout(MDBoxLayout):
         super().__init__(*args, **kwargs)
         self.timecontrol_options = [
             {
-                'time_text': '1 + 0',
-                'type_text': 'Bullet',
+                'type': 'Bullet',
                 'starting_time': 1,
                 'increment': 0,
             },
             {
-                'time_text': '2 + 1',
-                'type_text': 'Bullet',
+                'type': 'Bullet',
                 'starting_time': 2,
                 'increment': 1,
             },
             {
-                'time_text': '3 + 0',
-                'type_text': 'Blitz',
+                'type': 'Blitz',
                 'starting_time': 3,
                 'increment': 0,
             },
             {
-                'time_text': '3 + 2',
-                'type_text': 'Blitz',
+                'type': 'Blitz',
                 'starting_time': 3,
                 'increment': 2,
             },
             {
-                'time_text': '5 + 0',
-                'type_text': 'Blitz',
+                'type': 'Blitz',
                 'starting_time': 5,
                 'increment': 0,
             },
             {
-                'time_text': '5 + 3',
-                'type_text': 'Blitz',
+                'type': 'Blitz',
                 'starting_time': 5,
                 'increment': 3,
             },
             {
-                'time_text': '10 + 0',
-                'type_text': 'Rapid',
+                'type': 'Rapid',
                 'starting_time': 10,
                 'increment': 0,
             },
             {
-                'time_text': '10 + 5',
-                'type_text': 'Rapid',
+                'type': 'Rapid',
                 'starting_time': 10,
                 'increment': 5,
             },
             {
-                'time_text': '15 + 10',
-                'type_text': 'Rapid',
+                'type': 'Rapid',
                 'starting_time': 15,
                 'increment': 10,
             },
             {
-                'time_text': '30 + 0',
-                'type_text': 'Classical',
+                'type': 'Classical',
                 'starting_time': 30,
                 'increment': 0,
             },
             {
-                'time_text': '30 + 20',
-                'type_text': 'Classical',
+                'type': 'Classical',
                 'starting_time': 30,
                 'increment': 20,
             },
@@ -221,8 +210,9 @@ class MCCQuickSetupLayout(MDBoxLayout):
         for i, option in enumerate(self.timecontrol_options):
             timecontrol_button = MCCQuickSetupButton(
                 MDButtonText(
-                    text=option["time_text"] + "\n" + option["type_text"],
-                    font_style="Title",
+                    text=str(option["starting_time"]) + " + " + str(option["increment"]) + "\n" + option["type"],
+                    pos_hint={'center_x': 0.5,'center_y': 0.5},
+                    font_style="Title"
                 ),
                 style="outlined",
                 theme_width="Custom",
