@@ -11,7 +11,7 @@ from datetime import timedelta
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
 from kivy.utils import platform
-from kivy.metrics import dp
+from kivy.metrics import dp, mm
 from kivy.core.window import Window
 from kivy.logger import Logger
 from kivy.properties import (
@@ -234,8 +234,9 @@ class MCCQuickSetupLayout(MDBoxLayout):
                 style="outlined",
                 theme_width="Custom",
                 theme_height="Custom",
-                size_hint_x=None,
-                size_hint_y=1,
+                height=dp(100),
+                width=dp(100),
+                size_hint=(None, None),
                 # Setting the actual time-control variables
                 starting_time = option["starting_time"],
                 increment = option["increment"],
@@ -511,7 +512,8 @@ class MCCApp(MDApp):
                         id="quicksetup_dialog_content_layout",
                     ),
                     size_hint_y=None,
-                    height=dp(120),
+                    # height=dp(120),
+                    # height=300, # Using metrics 'dp' here causes the apk to crash
                     id="quicksetup_dialog_content_scrollview",
                 ),
                 id="quicksetup_dialog_content",
