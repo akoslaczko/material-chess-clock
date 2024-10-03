@@ -72,12 +72,6 @@ class MCCRootLayout(MDBoxLayout, DeclarativeBehavior):
     """
 
 
-class MCCClockLayout(MDBoxLayout):
-    """
-    The layout containing the widgets for the actual clock
-    """
-
-
 class MCCClockButton(MDExtendedFabButton):
     """
     The widget of the main clock buttons
@@ -305,73 +299,69 @@ class MCCApp(MDApp):
         #                           Root widget for the app                            #
         # ---------------------------------------------------------------------------- #
         self.root = MCCRootLayout(
-            MCCClockLayout(
-                # -------------------------- Clock button for White -------------------------- #
-                MCCClockButton(
-                    MCCTimeText(
-                        id='mcc_time_text_white',
-                    ),
-                    disabled=True,
-                    on_press=self.on_press_clock_button,
-                    id="mcc_clock_button_white",
+            # -------------------------- Clock button for White -------------------------- #
+            MCCClockButton(
+                MCCTimeText(
+                    id='mcc_time_text_white',
                 ),
-                # --------------------- Container for the control buttons -------------------- #
-                MCCControlButtonsLayout(
-                    # ----------------------------- Play/Pause button ---------------------------- #
-                    MDExtendedFabButton(
-                        MDExtendedFabButtonIcon(
-                            icon="play-pause"
-                        ),
-                        pos_hint={"center_x": .5, "center_y": .75},
-                        theme_elevation_level="Custom",
-                        elevation_level=3,
-                        disabled=False,
-                        on_press=self.on_press_playpause_button,
-                        id="mcc_play_pause_button",
+                disabled=True,
+                on_press=self.on_press_clock_button,
+                id="mcc_clock_button_white",
+            ),
+            # --------------------- Container for the control buttons -------------------- #
+            MCCControlButtonsLayout(
+                # ----------------------------- Play/Pause button ---------------------------- #
+                MDExtendedFabButton(
+                    MDExtendedFabButtonIcon(
+                        icon="play-pause"
                     ),
-                    # ------------------------------- Reset button ------------------------------- #
-                    MDExtendedFabButton(
-                        MDExtendedFabButtonIcon(
-                            icon="refresh"
-                        ),
-                        pos_hint={"center_x": .5, "center_y": .5},
-                        theme_elevation_level="Custom",
-                        elevation_level=3,
-                        disabled=False,
-                        on_press=self.on_press_reset_button,
-                        id="mcc_reset_button",
-                    ),
-                    # ------------------------------- Setup button ------------------------------- #
-                    MDExtendedFabButton(
-                        MDExtendedFabButtonIcon(
-                            icon="cog"
-                        ),
-                        pos_hint={"center_x": .5, "center_y": .25},
-                        theme_elevation_level="Custom",
-                        elevation_level=3,
-                        disabled=False,
-                        on_press=self.on_press_setup_button,
-                        id="mcc_setup_button",
-                    ),
-                    theme_width="Custom",
-                    adaptive_width=True,
-                    id="mcc_control_buttons_layout",
-                ),
-                # -------------------------- Clock button for Black -------------------------- #
-                MCCClockButton(
-                    MCCTimeText(
-                        id='mcc_time_text_black',
-                    ),
+                    pos_hint={"center_x": .5, "center_y": .75},
+                    theme_elevation_level="Custom",
+                    elevation_level=3,
                     disabled=False,
-                    on_press=self.on_press_clock_button,
-                    id="mcc_clock_button_black",
+                    on_press=self.on_press_playpause_button,
+                    id="mcc_play_pause_button",
                 ),
-                orientation="horizontal",
-                padding="15dp",
-                spacing="15dp",
-                id="mcc_clock_layout",
+                # ------------------------------- Reset button ------------------------------- #
+                MDExtendedFabButton(
+                    MDExtendedFabButtonIcon(
+                        icon="refresh"
+                    ),
+                    pos_hint={"center_x": .5, "center_y": .5},
+                    theme_elevation_level="Custom",
+                    elevation_level=3,
+                    disabled=False,
+                    on_press=self.on_press_reset_button,
+                    id="mcc_reset_button",
+                ),
+                # ------------------------------- Setup button ------------------------------- #
+                MDExtendedFabButton(
+                    MDExtendedFabButtonIcon(
+                        icon="cog"
+                    ),
+                    pos_hint={"center_x": .5, "center_y": .25},
+                    theme_elevation_level="Custom",
+                    elevation_level=3,
+                    disabled=False,
+                    on_press=self.on_press_setup_button,
+                    id="mcc_setup_button",
+                ),
+                theme_width="Custom",
+                adaptive_width=True,
+                id="mcc_control_buttons_layout",
+            ),
+            # -------------------------- Clock button for Black -------------------------- #
+            MCCClockButton(
+                MCCTimeText(
+                    id='mcc_time_text_black',
+                ),
+                disabled=False,
+                on_press=self.on_press_clock_button,
+                id="mcc_clock_button_black",
             ),
             md_bg_color=self.theme_cls.primaryContainerColor,
+            padding="15dp",
+            spacing="15dp",
             id="mcc_root_layout",
         )
         # ---------------------------------------------------------------------------- #
