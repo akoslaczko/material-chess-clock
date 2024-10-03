@@ -11,7 +11,7 @@ from datetime import timedelta
 from kivy.core.audio import SoundLoader
 from kivy.uix.widget import Widget
 from kivy.utils import platform
-from kivy.metrics import dp, mm
+from kivy.metrics import dp
 from kivy.core.window import Window
 from kivy.logger import Logger
 from kivy.properties import (
@@ -513,7 +513,7 @@ class MCCApp(MDApp):
                     ),
                     size_hint_y=None,
                     # height=dp(120),
-                    # height=300, # Using metrics 'dp' here causes the apk to crash
+                    # Using metrics 'dp' here causes the apk to crash
                     id="quicksetup_dialog_content_scrollview",
                 ),
                 id="quicksetup_dialog_content",
