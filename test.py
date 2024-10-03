@@ -51,24 +51,6 @@ class MCCApp(MDApp):
             MDDialogHeadlineText(
                 text="Quick Setup",
             ),
-            # ------------------------ Vertival scroll that works ------------------------ #
-            # MDDialogContentContainer(
-            #     MDScrollView(
-            #         MCCQuickSetupLayout(
-            #             adaptive_height=True,
-            #             orientation='vertical',
-            #             spacing="30dp",
-            #             padding="30dp",
-            #             id="quicksetup_dialog_content_layout",
-            #         ),
-            #         size_hint_y=None,
-            #         height=300,
-            #         id="quicksetup_dialog_content_scrollview",
-            #     ),
-            #     orientation="vertical",
-            #     id="quicksetup_dialog_content",
-            # ),
-            # ---------------------- Horizontal scroll (not working) --------------------- #
             MDDialogContentContainer(
                 MDScrollView(
                     MCCQuickSetupLayout(
@@ -78,7 +60,7 @@ class MCCApp(MDApp):
                         padding="30dp",
                         id="quicksetup_dialog_content_layout",
                     ),
-                    size_hint_x=None,
+                    size_hint_y=None,
                     width=1200,
                     id="quicksetup_dialog_content_scrollview",
                 ),
