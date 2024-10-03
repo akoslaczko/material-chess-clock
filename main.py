@@ -228,7 +228,6 @@ class MCCQuickSetupLayout(MDBoxLayout):
             timecontrol_button = MCCQuickSetupButton(
                 MDButtonText(
                     text=option["time_text"] + "\n" + option["type_text"],
-                    pos_hint={"center_x": .5, "center_y": .5},
                     font_style="Title",
                 ),
                 style="outlined",
