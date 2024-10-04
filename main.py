@@ -270,7 +270,7 @@ class MCCApp(MDApp):
         self.running = False
         self.flagged = False
         # Threading
-        self.thread = threading.Thread(target=self.refresh_active_players_time)
+        self.thread = None
         # Sounds
         self.clock_button_click = SoundLoader.load('assets/clock-button-press.mp3')
         self.control_button_click = SoundLoader.load('assets/control-button-press.mp3')
