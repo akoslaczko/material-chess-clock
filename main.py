@@ -4,11 +4,10 @@ Material Design style chess clock app using KivyMD
 
 # pylint: disable=E0611 # Disable the error related to importing from pxd files (temporary solution)
 
-import threading
-import time
 from datetime import timedelta
 
 from kivy.core.audio import SoundLoader
+from kivy.clock import Clock
 from kivy.uix.widget import Widget
 from kivy.utils import platform
 from kivy.metrics import dp
@@ -269,8 +268,8 @@ class MCCApp(MDApp):
         # State attributes
         self.running = False
         self.flagged = False
-        # Threading
-        self.thread = None
+        # Scheduler
+        self.refresh_event = None
         # Sounds
         self.clock_button_click = SoundLoader.load('assets/clock-button-press.mp3')
         self.control_button_click = SoundLoader.load('assets/control-button-press.mp3')
@@ -517,47 +516,46 @@ class MCCApp(MDApp):
             'time_text': self.root.get_ids().mcc_time_text_black,
         }
 
-    def refresh_active_players_time(self):
+    def refresh_active_players_time(self, dt):
         """
         Refresh active player time
         """
-        while self.running:
-            refresh_start = time.time()
-            # Get the active player's widgets
-            if self.active_player == 'white':
-                active_side = self.get_white_side()
-            elif self.active_player == 'black':
-                active_side = self.get_black_side()
-            # Refresh player time
-            active_side['time_text'].time -= timedelta(seconds=REFRESH_TIME)
-            # Play warning sound if under critical time
-            if active_side['time_text'].time == timedelta(seconds=10):
-                self.warning_sound.play()
+        # Get the active player's widgets
+        if self.active_player == 'white':
+            active_side = self.get_white_side()
+        elif self.active_player == 'black':
+            active_side = self.get_black_side()
+        # Refresh player time
+        if active_side['time_text'].time >= timedelta(seconds=dt):
+            active_side['time_text'].time -= timedelta(seconds=dt)
+        else:
             # Flagging
-            if active_side['time_text'].time == timedelta(milliseconds=0):
-                self.stop_clock()
-                self.flagged = True
-                self.flagging_sound.play()
-                break
-            # Sleep
-            refresh_duration = time.time() - refresh_start
-            time.sleep(REFRESH_TIME - refresh_duration if REFRESH_TIME > refresh_duration else 0)
+            active_side['time_text'].time = timedelta(milliseconds=0)
+            self.stop_clock()
+            self.flagged = True
+            self.flagging_sound.play()
+        # Play warning sound if under critical time
+        if active_side['time_text'].time == timedelta(seconds=10):
+            self.warning_sound.play()
 
     def start_clock(self):
         """
         Start clock
         """
         self.running = True
-        self.thread = threading.Thread(target=self.refresh_active_players_time)
-        self.thread.start()
+        if not self.refresh_event:
+            self.refresh_event = Clock.schedule_interval(self.refresh_active_players_time, REFRESH_TIME)
         self.update_control_buttons_disabled_state()
+
 
     def stop_clock(self):
         """
         Stop clock
         """
         self.running = False
-        # self.thread.join()
+        if self.refresh_event:
+            Clock.unschedule(self.refresh_event)
+            self.refresh_event = None
         self.update_control_buttons_disabled_state()
 
     def update_control_buttons_disabled_state(self):
