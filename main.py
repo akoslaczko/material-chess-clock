@@ -137,6 +137,16 @@ class MCCControlButtonsLayout(MDFloatLayout):
         self.width = max_child_width
 
 
+class MCCQuickSetupScrollView(MDScrollView):
+    """
+    The scroll view containing the MCCQuickSetupLayout instance
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.height = max([child.height for child in self.children])
+        Logger.info("MCCApp: MCCQuickSetupScrollView height=%s", self.height)
+
+
 class MCCQuickSetupLayout(MDBoxLayout):
     """
     Container for various quick setup options
@@ -202,6 +212,8 @@ class MCCQuickSetupLayout(MDBoxLayout):
             },
         ]
         self.add_timecontrol_options()
+        # self.height = max([child.height for child in self.children]) + dp(20)
+        Logger.info("MCCApp: MCCQuickSetupLayout height=%s", self.height)
 
     def add_timecontrol_options(self):
         """
@@ -226,7 +238,6 @@ class MCCQuickSetupLayout(MDBoxLayout):
                 # ID
                 id="quicksetup_button_" + str(i),
             )
-            # timecontrol_button = MDButton()
             self.add_widget(timecontrol_button)
 
 
@@ -483,15 +494,16 @@ class MCCApp(MDApp):
             ),
             # ------------------------------- Input fields ------------------------------- #
             MDDialogContentContainer(
-                MDScrollView(
+                MCCQuickSetupScrollView(
                     MCCQuickSetupLayout(
+                        height=dp(120),
                         adaptive_width=True,
                         spacing="10dp",
                         padding="10dp",
                         id="quicksetup_dialog_content_layout",
                     ),
                     size_hint_y=None,
-                    # height=dp(120), # Using explicite height value currently causes apk crash
+                    height=dp(120),
                     id="quicksetup_dialog_content_scrollview",
                 ),
                 id="quicksetup_dialog_content",
