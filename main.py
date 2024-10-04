@@ -104,6 +104,7 @@ class MCCTimeText(MDExtendedFabButtonText):
         self.bind(time=self.on_change_time)
         self.time = timedelta(minutes=app.starting_time)
         self.increment = timedelta(seconds=app.increment)
+        self.is_warned = False
 
     def on_change_time(self, *args):
         """
@@ -528,15 +529,19 @@ class MCCApp(MDApp):
         # Refresh player time
         if active_side['time_text'].time >= timedelta(seconds=dt):
             active_side['time_text'].time -= timedelta(seconds=dt)
+            # Play warning sound if under critical time (but only when reaching the threshold)
+            if active_side['time_text'].time <= timedelta(seconds=10):
+                if not active_side['time_text'].is_warned:
+                    self.warning_sound.play()
+                    active_side['time_text'].is_warned = True
+            else:
+                active_side['time_text'].is_warned = False
         else:
             # Flagging
             active_side['time_text'].time = timedelta(milliseconds=0)
             self.stop_clock()
             self.flagged = True
             self.flagging_sound.play()
-        # Play warning sound if under critical time
-        if active_side['time_text'].time == timedelta(seconds=10):
-            self.warning_sound.play()
 
     def start_clock(self):
         """
