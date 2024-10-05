@@ -722,8 +722,8 @@ class MCCApp(MDApp):
         starting_time = helpers.convert_time_string_to_integer(starting_time_text)
         increment = helpers.convert_time_string_to_integer(increment_text)
         # Updating default variables
-        self.starting_time = starting_time
-        self.increment = increment
+        self.starting_time = timedelta(minutes=starting_time)
+        self.increment = timedelta(seconds=increment)
         # Restart clock to apply effects
         self.reset_clock()
         self.setup_dialog.dismiss()
