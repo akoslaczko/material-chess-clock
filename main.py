@@ -60,7 +60,7 @@ if platform not in ['android', 'ios']:
 REFRESH_TIME = 0.1 # in seconds
 
 # ---------------------------------------------------------------------------- #
-#                                Custom classes                                #
+#                           Custom classes (main app)                          #
 # ---------------------------------------------------------------------------- #
 
 
@@ -137,20 +137,69 @@ class MCCControlButtonsLayout(MDFloatLayout):
         self.width = max_child_width
 
 
+# ---------------------------------------------------------------------------- #
+#                                 Reset dialog                                 #
+# ---------------------------------------------------------------------------- #
+
+
+class MCCResetDialog(MDDialog):
+    """
+    Reset Dialog
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # ---------------------------------- Header ---------------------------------- #
+        self.title = MDDialogHeadlineText(
+            text="Reset clock confirmation",
+            halign="left",
+        )
+        self.add_widget(self.title)
+        # ----------------------------------- Text ----------------------------------- #
+        self.text = MDDialogSupportingText(
+            text="Do you really want to reset the ongoing game?",
+            halign="left",
+        )
+        self.add_widget(self.text)
+        # ----------------------------- Button container ----------------------------- #
+        self.buttons = MDDialogButtonContainer(
+            Widget(),
+            MDButton(
+                MDButtonText(text="Cancel"),
+                style="outlined",
+                on_press=app.on_press_reset_dialog_cancel,
+            ),
+            MDButton(
+                MDButtonText(text="Accept"),
+                style="filled",
+                on_press=app.on_press_reset_dialog_accept,
+            ),
+            spacing="8dp",
+        )
+        self.add_widget(self.buttons)
+
+
+# ---------------------------------------------------------------------------- #
+#                              Quick Setup dialog                              #
+# ---------------------------------------------------------------------------- #
+
+
 class MCCQuickSetupDialog(MDDialog):
     """
     Quick Setup Dialog
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # ----------------------------------- Icon ----------------------------------- #
         self.icon = MDDialogIcon(
             icon="cog",
         )
         self.add_widget(self.icon)
+        # ----------------------------------- Title ---------------------------------- #
         self.title = MDDialogHeadlineText(
-            text="Quick Setup Time-control",
+            text="Quick Setup Game",
         )
         self.add_widget(self.title)
+        # ---------------------------------- Options --------------------------------- #
         self.options = MDDialogContentContainer(
             MCCQuickSetupScrollView(
                 MCCQuickSetupLayout(
@@ -164,7 +213,7 @@ class MCCQuickSetupDialog(MDDialog):
                 height=dp(120),
                 id="mcc_quicksetup_dialog_content_scrollview",
             ),
-            id="quicksetup_dialog_content",
+            id="mcc_quicksetup_dialog_content",
         )
         self.add_widget(self.options)
 
@@ -291,6 +340,102 @@ class MCCQuickSetupButton(MDButton):
         # Restart clock to apply effects
         app.reset_clock()
         app.quicksetup_dialog.dismiss()
+        app.quicksetup_dialog = None # We will reinitialize it before opening
+
+
+# ---------------------------------------------------------------------------- #
+#                              Custom Setup dialog                             #
+# ---------------------------------------------------------------------------- #
+
+
+class MCCCustomSetupDialog(MDDialog):
+    """
+    Custom Setup dialog
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # ----------------------------------- Icon ----------------------------------- #
+        self.icon = MDDialogIcon(
+            icon="cog",
+        )
+        self.add_widget(self.icon)
+        # ----------------------------------- Title ---------------------------------- #
+        self.title = MDDialogHeadlineText(
+            text="Setup Custom Game",
+        )
+        self.add_widget(self.title)
+        # ---------------------------------- Options --------------------------------- #
+        self.options = MDDialogContentContainer(
+            MDScrollView(
+                MDBoxLayout(
+                    # ------------------------------- Starting time ------------------------------ #
+                    MDTextField(
+                        MDTextFieldLeadingIcon(
+                            icon="clock",
+                        ),
+                        MDTextFieldHintText(
+                            text="Starting time",
+                        ),
+                        MDTextFieldHelperText(
+                            text="In the format of 'hh:mm'",
+                            mode="persistent",
+                        ),
+                        MDTextFieldMaxLengthText(
+                            max_text_length=5,
+                        ),
+                        mode="outlined",
+                        validator="time",
+                        text="00:01",
+                        id="starting_time",
+                    ),
+                    # --------------------------------- Increment -------------------------------- #
+                    MDTextField(
+                        MDTextFieldLeadingIcon(
+                            icon="plus",
+                        ),
+                        MDTextFieldHintText(
+                            text="Increment",
+                        ),
+                        MDTextFieldHelperText(
+                            text="In the format of 'mm:ss'",
+                            mode="persistent",
+                        ),
+                        MDTextFieldMaxLengthText(
+                            max_text_length=5,
+                        ),
+                        mode="outlined",
+                        validator="time",
+                        text="00:05",
+                        id="increment",
+                    ),
+                    adaptive_height=True,
+                    spacing="30dp",
+                    padding="30dp",
+                    id="setup_dialog_content_layout",
+                ),
+                size_hint_y=None,
+                # height=dp(100),
+                id="setup_dialog_content_scrollview",
+            ),
+            id="setup_dialog_content",
+        )
+        self.add_widget(self.options)
+        # ----------------------------- Button container ----------------------------- #
+        self.buttons = MDDialogButtonContainer(
+            Widget(),
+            MDButton(
+                MDButtonText(text="Cancel"),
+                style="outlined",
+                on_press=self.on_press_setup_dialog_cancel,
+            ),
+            MDButton(
+                MDButtonText(text="Accept"),
+                style="filled",
+                on_release=self.on_press_setup_dialog_accept,
+            ),
+            spacing="8dp",
+        )
+        self.add_widget(self.buttons)
 
 
 # ---------------------------------------------------------------------------- #
@@ -320,9 +465,9 @@ class MCCApp(MDApp):
         self.warning_sound = SoundLoader.load('assets/warning-sound.mp3')
         self.flagging_sound = SoundLoader.load('assets/flagging-sound.mp3')
         # Dialogs
-        self.reset_dialog = MDDialog()
-        self.setup_dialog = MDDialog()
-        self.quicksetup_dialog = MCCQuickSetupDialog()
+        self.reset_dialog = None
+        self.customsetup_dialog = None
+        self.quicksetup_dialog = None
 
     def build(self):
         # Theming
@@ -396,122 +541,6 @@ class MCCApp(MDApp):
             padding="15dp",
             spacing="15dp",
             id="mcc_root_layout",
-        )
-        # ---------------------------------------------------------------------------- #
-        #                                 Reset dialog                                 #
-        # ---------------------------------------------------------------------------- #
-        self.reset_dialog = MDDialog(
-            # ---------------------------------- Header ---------------------------------- #
-            MDDialogHeadlineText(
-                text="Reset clock confirmation",
-                halign="left",
-            ),
-            # ----------------------------------- Text ----------------------------------- #
-            MDDialogSupportingText(
-                text="Do you really want to reset the ongoing game?",
-                halign="left",
-            ),
-            # ----------------------------- Button container ----------------------------- #
-            MDDialogButtonContainer(
-                Widget(),
-                MDButton(
-                    MDButtonText(text="Cancel"),
-                    style="outlined",
-                    on_press=self.on_press_reset_dialog_cancel,
-                ),
-                MDButton(
-                    MDButtonText(text="Accept"),
-                    style="filled",
-                    on_press=self.on_press_reset_dialog_accept,
-                ),
-                spacing="8dp",
-            ),
-        )
-        # ---------------------------------------------------------------------------- #
-        #                                 Setup dialog                                 #
-        # ---------------------------------------------------------------------------- #
-        self.setup_dialog = MDDialog(
-            # ---------------------------------- Header ---------------------------------- #
-            MDDialogIcon(
-                icon="cog",
-            ),
-            MDDialogHeadlineText(
-                text="Setup new time-control",
-            ),
-            MDDialogSupportingText(
-                text="CAUTION: accepting will reset the clock!",
-            ),
-            # ------------------------------- Input fields ------------------------------- #
-            MDDialogContentContainer(
-                MDScrollView(
-                    MDBoxLayout(
-                        # ------------------------------- Starting time ------------------------------ #
-                        MDTextField(
-                            MDTextFieldLeadingIcon(
-                                icon="clock",
-                            ),
-                            MDTextFieldHintText(
-                                text="Starting time",
-                            ),
-                            MDTextFieldHelperText(
-                                text="In the format of 'hh:mm'",
-                                mode="persistent",
-                            ),
-                            MDTextFieldMaxLengthText(
-                                max_text_length=5,
-                            ),
-                            mode="outlined",
-                            validator="time",
-                            text="00:01",
-                            id="starting_time",
-                        ),
-                        # --------------------------------- Increment -------------------------------- #
-                        MDTextField(
-                            MDTextFieldLeadingIcon(
-                                icon="plus",
-                            ),
-                            MDTextFieldHintText(
-                                text="Increment",
-                            ),
-                            MDTextFieldHelperText(
-                                text="In the format of 'mm:ss'",
-                                mode="persistent",
-                            ),
-                            MDTextFieldMaxLengthText(
-                                max_text_length=5,
-                            ),
-                            mode="outlined",
-                            validator="time",
-                            text="00:05",
-                            id="increment",
-                        ),
-                        adaptive_height=True,
-                        spacing="30dp",
-                        padding="30dp",
-                        id="setup_dialog_content_layout",
-                    ),
-                    size_hint_y=None,
-                    # height=dp(100),
-                    id="setup_dialog_content_scrollview",
-                ),
-                id="setup_dialog_content",
-            ),
-            # ----------------------------- Button container ----------------------------- #
-            MDDialogButtonContainer(
-                Widget(),
-                MDButton(
-                    MDButtonText(text="Cancel"),
-                    style="outlined",
-                    on_press=self.on_press_setup_dialog_cancel,
-                ),
-                MDButton(
-                    MDButtonText(text="Accept"),
-                    style="filled",
-                    on_release=self.on_press_setup_dialog_accept,
-                ),
-                spacing="8dp",
-            ),
-            # ---------------------------------------------------------------------------- #
         )
         return self.root
 
@@ -642,6 +671,9 @@ class MCCApp(MDApp):
         On press method for Reset button
         """
         self.control_button_click.play()
+        # Initialize dialog
+        if not self.reset_dialog:
+            self.reset_dialog = MCCResetDialog()
         self.reset_dialog.open()
         Logger.info("MCCApp: Pressed reset button")
 
@@ -650,8 +682,9 @@ class MCCApp(MDApp):
         On press method for Setup button
         """
         self.control_button_click.play()
-        # Reinitialize dialog state
-        self.quicksetup_dialog = MCCQuickSetupDialog()
+        # Initialize dialog
+        if not self.quicksetup_dialog:
+            self.quicksetup_dialog = MCCQuickSetupDialog()
         self.quicksetup_dialog.open()
         Logger.info("MCCApp: Pressed setup button")
 
@@ -661,6 +694,7 @@ class MCCApp(MDApp):
         """
         Logger.info("MCCApp: Pressed reset dialog 'Cancel' button")
         self.reset_dialog.dismiss()
+        self.reset_dialog = None # We will reinitialize it before opening
 
     def on_press_reset_dialog_accept(self, *args):
         """
@@ -669,6 +703,7 @@ class MCCApp(MDApp):
         Logger.info("MCCApp: Pressed reset dialog 'Accept' button")
         self.reset_clock()
         self.reset_dialog.dismiss()
+        self.reset_dialog = None # We will reinitialize it before opening
 
     def on_press_setup_dialog_cancel(self, *args):
         """
