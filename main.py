@@ -447,7 +447,7 @@ class MCCApp(MDApp):
     The main app of material-chess-clock (MCC)
     """
     # Define new option property for keeping track of who is the active side
-    active_player = OptionProperty("black", options=["white", "black"])
+    active_player = OptionProperty("white", options=["white", "black"])
     starting_time = ObjectProperty(timedelta(seconds=15))
     increment = ObjectProperty(timedelta(seconds=5))
 
@@ -481,7 +481,7 @@ class MCCApp(MDApp):
                 MCCTimeText(
                     id='mcc_time_text_white',
                 ),
-                disabled=True,
+                disabled=False,
                 on_press=self.on_press_clock_button,
                 id="mcc_clock_button_white",
             ),
@@ -532,7 +532,7 @@ class MCCApp(MDApp):
                 MCCTimeText(
                     id='mcc_time_text_black',
                 ),
-                disabled=False,
+                disabled=True,
                 on_press=self.on_press_clock_button,
                 id="mcc_clock_button_black",
             ),
@@ -625,9 +625,9 @@ class MCCApp(MDApp):
         if self.running:
             self.stop_clock()
         self.flagged = False
-        self.active_player = 'black'
-        self.get_white_side()['button'].disabled = True
-        self.get_black_side()['button'].disabled = False
+        self.active_player = 'white'
+        self.get_white_side()['button'].disabled = False
+        self.get_black_side()['button'].disabled = True
         self.get_white_side()['time_text'].time = self.starting_time
         self.get_black_side()['time_text'].time = self.starting_time
 
