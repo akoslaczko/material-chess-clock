@@ -637,20 +637,20 @@ class MCCApp(MDApp):
         """
         if not self.flagged:
             self.clock_button_click.play()
-            if not self.running:
-                self.start_clock()
             if len(args) > 0 and isinstance(args[0], MCCClockButton):
                 button = args[0]
                 if button == self.get_white_side()['button']:
-                    self.get_white_side()['button'].disabled = True
-                    self.get_white_side()['time_text'].time += self.increment
-                    self.get_black_side()['button'].disabled = False
                     self.active_player = "black"
+                    self.get_white_side()['button'].disabled = True
+                    self.get_black_side()['button'].disabled = False
+                    if self.running:
+                        self.get_white_side()['time_text'].time += self.increment
                 elif button == self.get_black_side()['button']:
-                    self.get_black_side()['button'].disabled = True
-                    self.get_black_side()['time_text'].time += self.increment
-                    self.get_white_side()['button'].disabled = False
                     self.active_player = "white"
+                    self.get_black_side()['button'].disabled = True
+                    self.get_white_side()['button'].disabled = False
+                    if self.running:
+                        self.get_black_side()['time_text'].time += self.increment
             Logger.info("MCCApp: Pressed clock button")
 
     def on_press_playpause_button(self, *args):
