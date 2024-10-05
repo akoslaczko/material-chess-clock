@@ -57,7 +57,7 @@ if platform not in ['android', 'ios']:
 #                               Default variables                              #
 # ---------------------------------------------------------------------------- #
 
-REFRESH_TIME = 0.1 # in seconds
+REFRESH_TIME = 0.01 # in seconds
 
 # ---------------------------------------------------------------------------- #
 #                           Custom classes (main app)                          #
