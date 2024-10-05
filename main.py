@@ -302,7 +302,8 @@ class MCCQuickSetupLayout(MDBoxLayout):
         for i, option in enumerate(self.timecontrol_options):
             timecontrol_button = MCCQuickSetupButton(
                 MDButtonText(
-                    text=str(option["starting_time"]) + " + " + str(option["increment"]) + "\n" + option["type"],
+                    # text=str(option["starting_time"]) + " + " + str(option["increment"]) + "\n" + option["type"],
+                    text=str(option["starting_time"]) + " + " + str(option["increment"]),
                     pos_hint={'center_x': 0.5,'center_y': 0.5},
                     font_style="Title"
                 ),
