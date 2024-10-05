@@ -137,6 +137,38 @@ class MCCControlButtonsLayout(MDFloatLayout):
         self.width = max_child_width
 
 
+class MCCQuickSetupDialog(MDDialog):
+    """
+    Quick Setup Dialog
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.icon = MDDialogIcon(
+            icon="cog",
+        )
+        self.add_widget(self.icon)
+        self.title = MDDialogHeadlineText(
+            text="Quick Setup Time-control",
+        )
+        self.add_widget(self.title)
+        self.options = MDDialogContentContainer(
+            MCCQuickSetupScrollView(
+                MCCQuickSetupLayout(
+                    height=dp(120),
+                    adaptive_width=True,
+                    spacing="10dp",
+                    padding="10dp",
+                    id="mcc_quicksetup_dialog_content_layout",
+                ),
+                size_hint_y=None,
+                height=dp(120),
+                id="mcc_quicksetup_dialog_content_scrollview",
+            ),
+            id="quicksetup_dialog_content",
+        )
+        self.add_widget(self.options)
+
+
 class MCCQuickSetupScrollView(MDScrollView):
     """
     The scroll view containing the MCCQuickSetupLayout instance
@@ -290,7 +322,7 @@ class MCCApp(MDApp):
         # Dialogs
         self.reset_dialog = MDDialog()
         self.setup_dialog = MDDialog()
-        self.quicksetup_dialog = MDDialog()
+        self.quicksetup_dialog = MCCQuickSetupDialog()
 
     def build(self):
         # Theming
@@ -481,34 +513,6 @@ class MCCApp(MDApp):
             ),
             # ---------------------------------------------------------------------------- #
         )
-        # ---------------------------------------------------------------------------- #
-        #                              Quick setup dialog                              #
-        # ---------------------------------------------------------------------------- #
-        self.quicksetup_dialog = MDDialog(
-            # ---------------------------------- Header ---------------------------------- #
-            MDDialogIcon(
-                icon="cog",
-            ),
-            MDDialogHeadlineText(
-                text="Quick Setup Time-control",
-            ),
-            # ------------------------------- Input fields ------------------------------- #
-            MDDialogContentContainer(
-                MCCQuickSetupScrollView(
-                    MCCQuickSetupLayout(
-                        height=dp(120),
-                        adaptive_width=True,
-                        spacing="10dp",
-                        padding="10dp",
-                        id="quicksetup_dialog_content_layout",
-                    ),
-                    size_hint_y=None,
-                    height=dp(120),
-                    id="quicksetup_dialog_content_scrollview",
-                ),
-                id="quicksetup_dialog_content",
-            ),
-        )
         return self.root
 
     def get_white_side(self):
@@ -646,7 +650,8 @@ class MCCApp(MDApp):
         On press method for Setup button
         """
         self.control_button_click.play()
-        # self.setup_dialog.open()
+        # Reinitialize dialog state
+        self.quicksetup_dialog = MCCQuickSetupDialog()
         self.quicksetup_dialog.open()
         Logger.info("MCCApp: Pressed setup button")
 
