@@ -149,7 +149,7 @@ class MCCResetDialog(MDDialog):
         super().__init__(*args, **kwargs)
         # ---------------------------------- Header ---------------------------------- #
         self.title = MDDialogHeadlineText(
-            text="Reset clock confirmation",
+            text="Reset Clock",
             halign="left",
         )
         self.add_widget(self.title)
