@@ -102,8 +102,7 @@ class MCCTimeText(MDExtendedFabButtonText):
         self.size_hint = (1, 1) # Fixes bug related to buttons being clickable while disabled
         # Setup clock time related attributes
         self.bind(time=self.on_change_time)
-        self.time = timedelta(minutes=app.starting_time)
-        self.increment = timedelta(seconds=app.increment)
+        self.time = app.starting_time
         self.is_warned = False
 
     def on_change_time(self, *args):
@@ -335,8 +334,8 @@ class MCCQuickSetupButton(MDButton):
         """
         Logger.info("MCCApp: Pressed quick setup dialog option with 'id': %s", self.id)
         # Updating default variables
-        app.starting_time = self.starting_time
-        app.increment = self.increment
+        app.starting_time = timedelta(minutes=self.starting_time)
+        app.increment = timedelta(seconds=self.increment)
         # Restart clock to apply effects
         app.reset_clock()
         app.quicksetup_dialog.dismiss()
@@ -449,8 +448,8 @@ class MCCApp(MDApp):
     """
     # Define new option property for keeping track of who is the active side
     active_player = OptionProperty("black", options=["white", "black"])
-    starting_time = NumericProperty(0.2)  # in minutes
-    increment = NumericProperty(5)  # in seconds
+    starting_time = ObjectProperty(timedelta(seconds=15))
+    increment = ObjectProperty(timedelta(seconds=5))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -629,8 +628,8 @@ class MCCApp(MDApp):
         self.active_player = 'black'
         self.get_white_side()['button'].disabled = True
         self.get_black_side()['button'].disabled = False
-        self.get_white_side()['time_text'].time = timedelta(minutes=self.starting_time)
-        self.get_black_side()['time_text'].time = timedelta(minutes=self.starting_time)
+        self.get_white_side()['time_text'].time = self.starting_time
+        self.get_black_side()['time_text'].time = self.starting_time
 
     def on_press_clock_button(self, *args):
         """
@@ -644,12 +643,12 @@ class MCCApp(MDApp):
                 button = args[0]
                 if button == self.get_white_side()['button']:
                     self.get_white_side()['button'].disabled = True
-                    self.get_white_side()['time_text'].time += self.get_white_side()['time_text'].increment
+                    self.get_white_side()['time_text'].time += self.increment
                     self.get_black_side()['button'].disabled = False
                     self.active_player = "black"
                 elif button == self.get_black_side()['button']:
                     self.get_black_side()['button'].disabled = True
-                    self.get_black_side()['time_text'].time += self.get_black_side()['time_text'].increment
+                    self.get_black_side()['time_text'].time += self.increment
                     self.get_white_side()['button'].disabled = False
                     self.active_player = "white"
             Logger.info("MCCApp: Pressed clock button")
